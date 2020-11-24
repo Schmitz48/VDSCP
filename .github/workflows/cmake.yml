@@ -22,4 +22,4 @@ jobs:
           cmake --build $GITHUB_WORKSPACE/build/ --target VDSProject_test -- -j8
       - name: Run Tests
         run: |
-          $GITHUB_WORKSPACE/bin/VDSProject_test
+          $GITHUB_WORKSPACE/build/src/test/VDSProject_test
