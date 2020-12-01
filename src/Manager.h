@@ -13,12 +13,16 @@
 #include <set>
 #include <string>
 #include "ManagerInterface.h"
+#include "UniqueTable.h"
 
 namespace ClassProject {
 
 
     class Manager: public ManagerInterface{
     public:
+
+        Manager();
+
         BDD_ID createVar(const std::string &label) override;
 
         const BDD_ID &True() override;
@@ -60,6 +64,9 @@ namespace ClassProject {
         void findVars(const BDD_ID &root, std::set<BDD_ID> &vars_of_root) override;
 
         size_t uniqueTableSize() override;
+
+    private:
+        UniqueTable* uniqueTable;
     };
 
 

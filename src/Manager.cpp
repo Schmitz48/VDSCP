@@ -8,18 +8,20 @@
 
 namespace ClassProject {
 
-
+        Manager::Manager() {
+            uniqueTable = new UniqueTable();
+        }
 
         BDD_ID Manager::createVar(const std::string &label) {
             return 0;
         }
 
         const BDD_ID &Manager::True() {
-            return 0;
+            return uniqueTable->getTable().at(1)->getID();
         }
 
         const BDD_ID &Manager::False() {
-            return 0;
+            return uniqueTable->getTable().front()->getID();
         }
 
         bool Manager::isConstant(const BDD_ID f) {
@@ -93,8 +95,6 @@ namespace ClassProject {
         size_t Manager::uniqueTableSize() {
             return 0;
         }
-
-
 
 }
 
