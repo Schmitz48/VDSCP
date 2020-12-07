@@ -42,7 +42,7 @@ namespace ClassProject {
         BDD_ID coFactorFalse(const BDD_ID f, BDD_ID x) override;
 
         BDD_ID coFactorTrue(const BDD_ID f) override;
-        //! What should this do?
+        //! What should this do? - High or low
         BDD_ID coFactorFalse(const BDD_ID f) override;
 
         BDD_ID and2(const BDD_ID a, const BDD_ID b) override;
@@ -60,7 +60,7 @@ namespace ClassProject {
         std::string getTopVarName(const BDD_ID &root) override;
 
         void findNodes(const BDD_ID &root, std::set<BDD_ID> &nodes_of_root) override;
-        //! What is root?
+        //! What is root? - f is root
         void findVars(const BDD_ID &root, std::set<BDD_ID> &vars_of_root) override;
 
         size_t uniqueTableSize() override;

@@ -48,9 +48,18 @@ TEST_F(ManagerTest, and2) {
     manager->createVar("b");
     manager->createVar("c");
     manager->createVar("d");
-    //! First: Test the size of the unique Table
+    //! First: Test the terminal cases
+    EXPECT_EQ(manager->and2(1,1), 1 ); //1*1 returns 1
+    EXPECT_EQ(manager->and2(0,0), 0 ); //and with one 0 returns 0
+    EXPECT_EQ(manager->and2(0,1), 0 ); //and with false returns the false
+    EXPECT_EQ(manager->and2(1,0), 0 ); //and with false returns the false
+    //! First: Test Variable with terminal case
     EXPECT_EQ(manager->and2(2,1), 2 ); //and with true returns the variable
     EXPECT_EQ(manager->and2(3,0), 0 ); //and with false returns the false
+    //! Second: Test the other way round
+    EXPECT_EQ(manager->and2(1,2), 2 ); //and with true returns the variable
+    EXPECT_EQ(manager->and2(0,3), 0 ); //and with false returns the false
+
     ClassProject::BDD_ID ID = manager->and2(2,3);
     auto entry = manager->getUniqueTable()->getTable().at(ID);
     EXPECT_EQ(entry->getTopVar(), 2 ); //Topvar of 2,3 is expected to be 2
