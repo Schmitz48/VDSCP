@@ -18,6 +18,8 @@ namespace ClassProject {
 
         void insertEntry(UniqueTableEntry* entry);
         std::vector<UniqueTableEntry*> getTable();
+        UniqueTableEntry* getEntry(BDD_ID id);
+        void printTable();
     private:
         std::vector<UniqueTableEntry*> entries;
     };
