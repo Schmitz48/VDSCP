@@ -82,6 +82,124 @@ TEST_F(ManagerTest, and2) {
 
 }
 
+TEST_F(ManagerTest, or2) {
+    /** Check for correct variable creation in the unique table
+     */
+    manager->createVar("a");
+    manager->createVar("b");
+    manager->createVar("c");
+    manager->createVar("d");
+    //! First: Test the terminal cases
+    EXPECT_EQ(manager->or2(1,1), 1 ); //1*1 returns 1
+    EXPECT_EQ(manager->or2(0,0), 0 ); //and with one 0 returns 0
+    EXPECT_EQ(manager->or2(0,1), 1 ); //and with false returns the false
+    EXPECT_EQ(manager->or2(1,0), 1 ); //and with false returns the false
+    //! First: Test Variable with terminal case
+    EXPECT_EQ(manager->or2(2,1), 1 ); //and with true returns the variable
+    EXPECT_EQ(manager->or2(3,0), 3 ); //and with false returns the false
+    //! Second: Test the other way round
+    EXPECT_EQ(manager->or2(1,2), 1 ); //and with true returns the variable
+    EXPECT_EQ(manager->or2(0,3), 3 ); //and with false returns the false
+}
+
+TEST_F(ManagerTest, xor2) {
+    /** Check for correct variable creation in the unique table
+     */
+    manager->createVar("a");
+    manager->createVar("b");
+    manager->createVar("c");
+    manager->createVar("d");
+    //! First: Test the terminal cases
+    EXPECT_EQ(manager->xor2(1,1), 0 ); //1*1 returns 1
+    EXPECT_EQ(manager->xor2(0,0), 0 ); //and with one 0 returns 0
+    EXPECT_EQ(manager->xor2(0,1), 1 ); //and with false returns the false
+    EXPECT_EQ(manager->xor2(1,0), 1 ); //and with false returns the false
+
+}
+
+TEST_F(ManagerTest, neg) {
+    /** Check for correct variable creation in the unique table
+     */
+    manager->createVar("a");
+    manager->createVar("b");
+    manager->createVar("c");
+    manager->createVar("d");
+    //! First: Test the terminal cases
+    EXPECT_EQ(manager->neg(1), 0 ); //1*1 returns 1
+    EXPECT_EQ(manager->neg(0), 1 ); //and with one 0 returns 0
+
+}
+
+TEST_F(ManagerTest, nand2) {
+    /** Check for correct variable creation in the unique table
+     */
+    manager->createVar("a");
+    manager->createVar("b");
+    manager->createVar("c");
+    manager->createVar("d");
+    //! First: Test the terminal cases
+    EXPECT_EQ(manager->nand2(1,1), 0 ); //1*1 returns 1
+    EXPECT_EQ(manager->nand2(0,0), 1 ); //and with one 0 returns 0
+    EXPECT_EQ(manager->nand2(0,1), 1 ); //and with false returns the false
+    EXPECT_EQ(manager->nand2(1,0), 1 ); //and with false returns the false
+
+}
+
+TEST_F(ManagerTest, nor2) {
+    /** Check for correct variable creation in the unique table
+     */
+    manager->createVar("a");
+    manager->createVar("b");
+    manager->createVar("c");
+    manager->createVar("d");
+    //! First: Test the terminal cases
+    EXPECT_EQ(manager->nor2(1,1), 0 ); //1*1 returns 1
+    EXPECT_EQ(manager->nor2(0,0), 1 ); //and with one 0 returns 0
+    EXPECT_EQ(manager->nor2(0,1), 0 ); //and with false returns the false
+    EXPECT_EQ(manager->nor2(1,0), 0 ); //and with false returns the false
+
+}
+
+TEST_F(ManagerTest, findNodes) {
+    /* Check findNodes()*/
+    //Create sets for nodes and expected nodes
+    std::set<ClassProject::BDD_ID> nodes;
+    std::set<ClassProject::BDD_ID> x_nodes;
+    //Trivial Tests
+    //! 0 is the only node
+    x_nodes = {0};
+    manager->findNodes(0,nodes);
+    EXPECT_EQ(nodes,x_nodes);
+    nodes.clear();
+    //! 1 is the only node
+    x_nodes = {1};
+    manager->findNodes(1,nodes);
+    EXPECT_EQ(nodes,x_nodes);
+    nodes.clear();
+    //Test single variable
+    //! variable 1 and 0
+    manager->createVar("a");
+    x_nodes = {2,1,0};
+    manager->findNodes(2,nodes);
+    EXPECT_EQ(nodes,x_nodes);
+    nodes.clear();
+    //Test BDD example
+    //𝑓=(𝑎+𝑏).𝑐.𝑑
+
+    manager->createVar("b");
+    manager->createVar("c");
+    manager->createVar("d");
+
+    manager->or2(2,3);
+    manager->and2(5,4);
+    manager->and2(6,7);
+
+    x_nodes = {9,8,7,5,1,0};
+    manager->findNodes(9,nodes);
+    EXPECT_EQ(nodes,x_nodes);
+}
+
+
 
 #endif //VDS_PROJECT_TESTS_H
 
