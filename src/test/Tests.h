@@ -199,6 +199,62 @@ TEST_F(ManagerTest, findNodes) {
     EXPECT_EQ(nodes,x_nodes);
 }
 
+TEST_F(ManagerTest, findVars) {
+    /* Check findNodes()*/
+    //Create sets for vars and expected vars
+    std::set<ClassProject::BDD_ID> vars;
+    std::set<ClassProject::BDD_ID> x_vars;
+    //Trivial Tests
+    //! 0 is const and not variable
+    x_vars = {};
+    manager->findVars(0,vars);
+    EXPECT_EQ(vars,x_vars);
+    vars.clear();
+    //! 1 is const and not variable
+    x_vars = {};
+    manager->findVars(1,vars);
+    EXPECT_EQ(vars,x_vars);
+    vars.clear();
+    //Test single variable
+    //! find variable
+    manager->createVar("a");
+    x_vars = {2};
+    manager->findVars(2,vars);
+    EXPECT_EQ(vars,x_vars);
+    vars.clear();
+    //Test BDD example
+    //! 𝑓=(𝑎+𝑏)*𝑐*𝑑
+
+    manager->createVar("b");
+    manager->createVar("c");
+    manager->createVar("d");
+
+    manager->or2(2,3);
+    manager->and2(5,4);
+    manager->and2(6,7);
+
+    x_vars = {2,3,4,5};
+    manager->findVars(9,vars);
+    EXPECT_EQ(vars,x_vars);
+    vars.clear();
+
+    //Test some formula that optimizes two variables to one a*b + a*!b
+    ClassProject::Manager* manager2 = new ClassProject::Manager();
+    manager2->createVar("a");
+    manager2->createVar("b");
+    manager2->neg(3);
+    manager2->and2(2,3);
+    manager2->and2(2,4);
+    manager2->getUniqueTable()->printTable();
+    x_vars = {2};
+    manager2->findVars(manager2->or2(5,6),vars);
+    EXPECT_EQ(vars,x_vars);
+    vars.clear();
+
+
+
+}
+
 
 
 #endif //VDS_PROJECT_TESTS_H
