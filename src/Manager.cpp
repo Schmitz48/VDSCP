@@ -13,10 +13,11 @@ namespace ClassProject {
         }
 
         BDD_ID Manager::createVar(const std::string &label) {
-            auto entry = new UniqueTableEntry(uniqueTableSize(), label,1,0,uniqueTableSize());
+            BDD_ID id = uniqueTableSize();
+            auto entry = new UniqueTableEntry( id, label,1,0,id);
             entry->setIsVar();
             uniqueTable->insertEntry(entry);
-            return uniqueTableSize();
+            return id;
         }
 
         const BDD_ID &Manager::True() {
@@ -84,14 +85,6 @@ namespace ClassProject {
                 }
             }
             uniqueTable->insertEntry(entry);
-            /*let x be the top-variable of (f, g, h);
-            rhigh:= ite(f|x=1, g|x=1, h|x=1);
-            rlow:= ite(f|x=0, g|x=0, h|x=0);
-            if(rhigh== rlow)  reduction is possible
-                return rhigh;
-            r:= find_or_add_unique_table(x, rlow, rhigh); /* eliminate isomorphic sub-graphs  update_computed_table((f, g, h), r);
-            returnr;*/
-            //coFactorTrue();
             return id;
         }
 
@@ -136,21 +129,27 @@ namespace ClassProject {
         }
 
         BDD_ID Manager::and2(const BDD_ID a, const BDD_ID b) {
+            //! and = ite(a,b,0)
             currentNode = "and";
             return ite(a,b,0);
         }
 
         BDD_ID Manager::or2(const BDD_ID a, const BDD_ID b) {
+            //! or = ite(a,1,b)
             currentNode = "or";
             return ite(a,1,b);
         }
 
         BDD_ID Manager::xor2(const BDD_ID a, const BDD_ID b) {
+            //! xor = ite(a,neg(b),b)
             currentNode = "xor";
             return ite(a,neg(b),b);
         }
 
         BDD_ID Manager::neg(const BDD_ID a) {
+            //! For trivial cases: return the opposite
+
+            //! For non trivial cases: switch high and low successor and find or add to table
             BDD_ID id = uniqueTableSize();
             auto current = uniqueTable->getEntry(a);
             if (current->getID() == 0) {
@@ -170,17 +169,19 @@ namespace ClassProject {
         }
 
         BDD_ID Manager::nand2(const BDD_ID a, const BDD_ID b) {
+            //! nand = ite(a,neg(b),1)
             currentNode = "nand";
             return ite(a,neg(b),1);
         }
 
         BDD_ID Manager::nor2(const BDD_ID a, const BDD_ID b) {
+            //! nor = ite(a,0,neg(b))
             currentNode = "nor";
             return ite(a,0,neg(b));
         }
 
         std::string Manager::getTopVarName(const BDD_ID &root) {
-            return "";
+            return uniqueTable->getEntry(root)->getLabel();
         }
 
         void Manager::findNodes(const BDD_ID &root, std::set<BDD_ID> &nodes_of_root) {
