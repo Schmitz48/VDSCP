@@ -77,7 +77,7 @@ namespace ClassProject {
             }
             BDD_ID id = uniqueTableSize();
             auto entry = new UniqueTableEntry(id, currentNode, high, low, top_var);
-            std::set<BDD_ID> currentTriple {high,low,top_var};
+            std::vector<BDD_ID> currentTriple = {high,low,top_var};
             for (const auto & table: uniqueTable->getTable()) {
                 if (table->getTriple() == currentTriple) {
                     return table->getID();
@@ -146,19 +146,37 @@ namespace ClassProject {
         }
 
         BDD_ID Manager::xor2(const BDD_ID a, const BDD_ID b) {
-            return 0;
+            currentNode = "xor";
+            return ite(a,neg(b),b);
         }
 
         BDD_ID Manager::neg(const BDD_ID a) {
-            return 0;
+            BDD_ID id = uniqueTableSize();
+            auto current = uniqueTable->getEntry(a);
+            if (current->getID() == 0) {
+                return 1;
+            } else if(current->getID() == 1) {
+                return 0;
+            }
+            auto entry = new UniqueTableEntry(id, "neg", current->getLow(), current->getHigh(), current->getTopVar());
+            std::vector<BDD_ID> currentTriple = {current->getLow(),current->getHigh(),current->getTopVar()};
+            for (const auto & table: uniqueTable->getTable()) {
+                if (table->getTriple() == currentTriple) {
+                    return table->getID();
+                }
+            }
+            uniqueTable->insertEntry(entry);
+            return id;
         }
 
         BDD_ID Manager::nand2(const BDD_ID a, const BDD_ID b) {
-            return 0;
+            currentNode = "nand";
+            return ite(a,neg(b),1);
         }
 
         BDD_ID Manager::nor2(const BDD_ID a, const BDD_ID b) {
-            return 0;
+            currentNode = "nor";
+            return ite(a,0,neg(b));
         }
 
         std::string Manager::getTopVarName(const BDD_ID &root) {
@@ -166,11 +184,39 @@ namespace ClassProject {
         }
 
         void Manager::findNodes(const BDD_ID &root, std::set<BDD_ID> &nodes_of_root) {
+            std::vector<BDD_ID> queue;
+            queue.push_back(root);
+            nodes_of_root.insert(root);
+            while(!queue.empty()) {
+                auto queue_entry = uniqueTable->getEntry(queue.front());
+                if(!queue_entry->getIsConst()) {
+                    queue.push_back(queue_entry->getHigh());
+                    queue.push_back(queue_entry->getLow());
+                }
+                nodes_of_root.insert(queue_entry->getID());
+                queue.erase(queue.begin());
+            }
 
         }
 
         void Manager::findVars(const BDD_ID &root, std::set<BDD_ID> &vars_of_root) {
 
+            std::vector<BDD_ID> queue;
+            if (isConstant(root)) {
+                return;
+            }
+            queue.push_back(root);
+            while(!queue.empty()) {
+                auto queue_entry = uniqueTable->getEntry(queue.front());
+                if(!queue_entry->getIsConst()) {
+                    queue.push_back(queue_entry->getHigh());
+                    queue.push_back(queue_entry->getLow());
+                }
+                if(!isConstant(queue_entry->getTopVar())) {
+                    vars_of_root.insert(queue_entry->getTopVar());
+                }
+                queue.erase(queue.begin());
+            }
         }
 
         size_t Manager::uniqueTableSize() {

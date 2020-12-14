@@ -6,6 +6,7 @@
 #define VDSPROJECT_UNIQUETABLEENTRY_H
 
 #include "ManagerInterface.h"
+#include <vector>
 
 namespace ClassProject {
 
@@ -25,7 +26,7 @@ namespace ClassProject {
         BDD_ID getTopVar() const;
         bool getIsVar() const;
         bool getIsConst() const;
-        std::set<BDD_ID> getTriple();
+        std::vector<BDD_ID> getTriple();
 
 
         //Setter
@@ -42,7 +43,7 @@ namespace ClassProject {
         BDD_ID top_var_;
         bool is_var_;
         bool is_const_;
-        std::set<BDD_ID> triple;
+        std::vector<BDD_ID> triple_;
     };
 
 }

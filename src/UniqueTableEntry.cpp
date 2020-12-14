@@ -60,11 +60,14 @@ namespace ClassProject {
     }
 
     void UniqueTableEntry::setTriple() {
-        triple = {high_, low_, top_var_};
+        triple_.clear();
+        triple_.push_back(high_);
+        triple_.push_back(low_);
+        triple_.push_back(top_var_);
     }
 
-    std::set<BDD_ID> UniqueTableEntry::getTriple() {
-        return triple;
+    std::vector<BDD_ID> UniqueTableEntry::getTriple() {
+        return triple_;
     }
 
 }
