@@ -10,6 +10,16 @@
 
 namespace ClassProject {
 
+    //!  UniqueTableEntry
+    /*!
+    A unique table entry contains information about the individual entry,
+    i.e, id, label, high successor, low successor and the top variable.
+    This information can be accessed by the getter functions of this class.
+    Additionally, the two boolean flags is_var_ and is_const_ can be read.
+    The triple {high successor, low successor, top variable} is to determine whether
+    the entry is unique or not and can also be accessed by a getter function.
+    */
+
     class UniqueTableEntry{
     public:
         UniqueTableEntry(BDD_ID id,

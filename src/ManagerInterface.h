@@ -12,7 +12,14 @@ namespace ClassProject {
 
     typedef size_t BDD_ID;
 
+    //!  ManagerInterface
+    /*!
+    Interface class for the minimalistic BDD library to be implemented.
+    It declares pure virtual functions that have to be implemented by the BDD library class.
+    */
+
     class ManagerInterface {
+
     public:
         virtual BDD_ID createVar(const std::string &label) = 0;
 

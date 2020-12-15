@@ -18,6 +18,12 @@
 namespace ClassProject {
 
 
+    //!  Manager
+    /*!
+    The Manager class inherits and implements the pure virtual functions from the ManagerInterface.
+    It manages the BDD represented by the private member uniqueTable.
+    */
+
     class Manager: public ManagerInterface{
     public:
 
@@ -163,7 +169,7 @@ namespace ClassProject {
         UniqueTable* getUniqueTable();
 
     private:
-        UniqueTable* uniqueTable;
+        UniqueTable* uniqueTable;   /*!< The unique table representing the BDD*/
         std::string currentNode;
     };
 
