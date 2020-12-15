@@ -212,9 +212,9 @@ namespace ClassProject {
                 if(!queue_entry->getIsConst()) {
                     queue.push_back(queue_entry->getHigh());
                     queue.push_back(queue_entry->getLow());
-                }rt(queue_entry->getTopVar()
+                }
                 if(!isConstant(queue_entry->getTopVar())) {
-                    vars_of_root.inse);
+                    vars_of_root.insert(queue_entry->getTopVar());
                 }
                 queue.erase(queue.begin());
             }
