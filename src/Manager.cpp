@@ -119,13 +119,13 @@ namespace ClassProject {
                 return ite(f_entry->getTopVar(), T, F);
             }
         }
-
+        //Cofactor for Top variable
         BDD_ID Manager::coFactorTrue(const BDD_ID f) {
-            return 0;
+            return coFactorTrue(f, topVar(f));
         }
-
+        //Cofactor for Top variable
         BDD_ID Manager::coFactorFalse(const BDD_ID f) {
-            return 0;
+            return coFactorFalse(f, topVar(f));
         }
 
         BDD_ID Manager::and2(const BDD_ID a, const BDD_ID b) {
@@ -181,7 +181,7 @@ namespace ClassProject {
         }
 
         std::string Manager::getTopVarName(const BDD_ID &root) {
-            return uniqueTable->getEntry(root)->getLabel();
+            return uniqueTable->getEntry(topVar(root))->getLabel();
         }
 
         void Manager::findNodes(const BDD_ID &root, std::set<BDD_ID> &nodes_of_root) {
@@ -212,9 +212,9 @@ namespace ClassProject {
                 if(!queue_entry->getIsConst()) {
                     queue.push_back(queue_entry->getHigh());
                     queue.push_back(queue_entry->getLow());
-                }
+                }rt(queue_entry->getTopVar()
                 if(!isConstant(queue_entry->getTopVar())) {
-                    vars_of_root.insert(queue_entry->getTopVar());
+                    vars_of_root.inse);
                 }
                 queue.erase(queue.begin());
             }
