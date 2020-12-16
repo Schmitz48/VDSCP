@@ -50,8 +50,6 @@ namespace ClassProject {
                 return i;
             } else if (t == e) {
                 return e;
-            } else if (t == 0 && e == 1) {
-                return neg(i);
             }
             std::set<BDD_ID> ids {i,t,e};
             BDD_ID top_var = uniqueTableSize();
