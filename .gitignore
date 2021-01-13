@@ -33,5 +33,7 @@
 
 build/*
 cmake-build-debug/*
+boost/*
 gtest/*
 .idea/*
+benchmarks/*

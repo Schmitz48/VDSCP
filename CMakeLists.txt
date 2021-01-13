@@ -34,12 +34,20 @@ if (CMAKE_VERSION VERSION_LESS 2.8.11)
     include_directories("${gtest_SOURCE_DIR}/include")
 endif()
 
+
+
 #Include dirs
 include_directories(${CMAKE_SOURCE_DIR}/src)
 link_directories(${CMAKE_SOURCE_DIR}/src)
 
 include_directories(${CMAKE_SOURCE_DIR}/src/test/)
 link_directories(${CMAKE_SOURCE_DIR}/src/test/)
+
+include_directories(${CMAKE_SOURCE_DIR}/src/bench/)
+link_directories(${CMAKE_SOURCE_DIR}/src/bench/)
+
+include_directories(${CMAKE_SOURCE_DIR}/src/verify/)
+link_directories(${CMAKE_SOURCE_DIR}/src/verify/)
 
 add_subdirectory(src)
 add_executable(VDSProject src/main.cpp)
