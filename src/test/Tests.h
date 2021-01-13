@@ -262,6 +262,15 @@ TEST_F(ManagerTest, nor2) {
     //EXPECT_EQ(entry->getLow(), 0 ); //Low successor is false
 }
 
+TEST_F(ManagerTest, coFactorFalse){
+    ClassProject::BDD_ID a = manager->createVar("a");
+    ClassProject::BDD_ID b = manager->createVar("b");
+    ClassProject::BDD_ID a_and_b = manager->and2(a,b);
+    auto f = manager->ite (a_and_b, 0, 1) ; // Quasi neg(a_and_b)
+    manager->getUniqueTable()->printTable();
+    EXPECT_EQ(manager->coFactorFalse(f), 1);
+}
+
 TEST_F(ManagerTest, findNodes) {
     /* Check findNodes()*/
     //Create sets for nodes and expected nodes
