@@ -6,6 +6,7 @@
 #define VDSPROJECT_UNIQUETABLE_H
 
 #include "UniqueTableEntry.h"
+#include "../3rdParty/robin-map/include/tsl/robin_map.h"
 #include <map>
 
 namespace ClassProject {
@@ -26,13 +27,14 @@ namespace ClassProject {
         //! adds an entry to the table
         void insertEntry(UniqueTableEntry* entry);
         //! returns all entries
-        std::map<int, UniqueTableEntry*> getTable();
+        tsl::robin_map<int, UniqueTableEntry*> getTable();
         //! returns a specified entry
         UniqueTableEntry* getEntry(BDD_ID id);
         //! visualizes the table in the command line
         void printTable();
     private:
-        std::map<int, UniqueTableEntry*> entries;
+        tsl::robin_map<int, UniqueTableEntry*> entries;
+
     };
 
 

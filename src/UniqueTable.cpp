@@ -6,6 +6,7 @@
 #include <iostream>
 
 
+
 namespace ClassProject {
 
     UniqueTable::UniqueTable() {
@@ -22,7 +23,7 @@ namespace ClassProject {
         entries.insert(std::pair<int, UniqueTableEntry*>(entries.size(), entry));
     }
 
-    std::map<int, UniqueTableEntry*> UniqueTable::getTable() {
+    tsl::robin_map<int, UniqueTableEntry*> UniqueTable::getTable() {
         return entries;
     }
 
