@@ -281,12 +281,69 @@ TEST_F(ManagerTest, nor2) {
 TEST_F(ManagerTest, coFactorFalse){
     ClassProject::BDD_ID a = manager->createVar("a");
     ClassProject::BDD_ID b = manager->createVar("b");
-    ClassProject::BDD_ID a_and_b = manager->and2(a,b);
-    auto f = manager->ite(a_and_b, 0, 1); // Quasi neg(a_and_b)
-    auto g = manager->neg(f);
-    manager->getUniqueTable()->printTable();
+    ClassProject::BDD_ID c = manager->createVar("c");
+
+    ClassProject::BDD_ID b_and_c = manager->and2(b,c);
+    //! First: [one Argument] Test the terminal cases
+    auto f = manager->ite(a, 0, 1);
     EXPECT_EQ(manager->coFactorFalse(f), 1);
+    f = manager->ite(a, 1, 0);
+    EXPECT_EQ(manager->coFactorFalse(f), 0);
+
+    //! Second: [one Argument] Test with variables
+    f = manager->ite(a, 1, b);
+    EXPECT_EQ(manager->coFactorFalse(f), b);
+    f = manager->ite(a, 1, b_and_c);
+    EXPECT_EQ(manager->coFactorFalse(f), b_and_c);
+
+    //! First: [two Arguments] Test the terminal cases
+    f = manager->ite(a, 0, 1);
+    EXPECT_EQ(manager->coFactorFalse(f,a), 1);
+    f = manager->ite(a, 1, 0);
+    EXPECT_EQ(manager->coFactorFalse(f,a), 0);
+
+    //! Second: [two Arguments] Test with variables
+    f = manager->ite(a, 1, b);
+    EXPECT_EQ(manager->coFactorFalse(f,a), b);
+    f = manager->ite(a, 1, b_and_c);                // f=a+(b*c)
+    EXPECT_EQ(manager->coFactorFalse(f,c), a);
 }
+
+TEST_F(ManagerTest, coFactorTrue){
+    ClassProject::BDD_ID a = manager->createVar("a");
+    ClassProject::BDD_ID b = manager->createVar("b");
+    ClassProject::BDD_ID c = manager->createVar("c");
+
+    ClassProject::BDD_ID b_and_c = manager->and2(b,c);
+    //! First: [one Argument] Test the terminal cases
+    auto f = manager->ite(a, 0, 1);
+    EXPECT_EQ(manager->coFactorTrue(f), 0);
+    f = manager->ite(a, 1, 0);
+    EXPECT_EQ(manager->coFactorTrue(f), 1);
+
+    //! Second: [one Argument] Test with variables
+    f = manager->ite(a, b, 1);
+    EXPECT_EQ(manager->coFactorTrue(f), b);
+    f = manager->ite(a, b_and_c, 1);
+    EXPECT_EQ(manager->coFactorTrue(f), b_and_c);
+    f = manager->ite(a, 1,b_and_c);                 // f=a+(b*c)
+    EXPECT_EQ(manager->coFactorTrue(f), 1);
+
+    //! First: [two Arguments] Test the terminal cases
+    f = manager->ite(a, 0, 1);
+    EXPECT_EQ(manager->coFactorTrue(f,a), 0);
+    f = manager->ite(a, 1, 0);
+    EXPECT_EQ(manager->coFactorTrue(f,a), 1);
+
+    //! Second: [two Arguments] Test with variables
+    f = manager->ite(a,b, 1);
+    EXPECT_EQ(manager->coFactorTrue(f,a), b);
+
+    f = manager->ite(a,1,b_and_c);                      // f=a+(b*c)
+    auto a_or_b = manager->ite(a,1, b);
+    EXPECT_EQ(manager->coFactorTrue(f,c), a_or_b);    // coFactorTrue(f,c)=a+b
+}
+
 
 TEST_F(ManagerTest, findNodes) {
     /* Check findNodes()*/
