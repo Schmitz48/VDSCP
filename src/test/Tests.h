@@ -43,6 +43,28 @@ TEST_F(ManagerTest, createVar) {
 
 }
 
+TEST_F(ManagerTest, ite){
+    ClassProject::BDD_ID a = manager->createVar("a");
+    ClassProject::BDD_ID b = manager->createVar("b");
+    ClassProject::BDD_ID c = manager->createVar("c");
+    ClassProject::BDD_ID d = manager->createVar("d");
+    //! First: Test the terminal cases
+    EXPECT_EQ(manager->ite(0,0,0), 0 );
+    EXPECT_EQ(manager->ite(0,0,1), 1 );
+    EXPECT_EQ(manager->ite(0,1,0), 0 );
+    EXPECT_EQ(manager->ite(0,1,1), 1 );
+    EXPECT_EQ(manager->ite(1,0,0), 0 );
+    EXPECT_EQ(manager->ite(1,0,1), 0 );
+    EXPECT_EQ(manager->ite(1,1,0), 1 );
+    EXPECT_EQ(manager->ite(1,1,1), 1 );
+    // Test with variables
+    EXPECT_EQ(manager->ite(0,a,b), b );
+    EXPECT_EQ(manager->ite(1,a,b), a );
+    EXPECT_EQ(manager->ite(a,1,0), a );
+    EXPECT_EQ(manager->ite(a,0,1), manager->neg(a) );
+
+}
+
 TEST_F(ManagerTest, and2) {
     /** Check for correct variable creation in the unique table
      */
