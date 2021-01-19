@@ -51,6 +51,23 @@ namespace ClassProject {
             } else if (t == e) {
                 return e;
             }
+                /*BDD_ID id = uniqueTableSize();
+                auto current = uniqueTable->getEntry(i);
+                if (current->getID() == 0) {
+                    return 1;
+                } else if(current->getID() == 1) {
+                    return 0;
+                }
+                auto entry = new UniqueTableEntry(id, "neg", current->getLow(), current->getHigh(), current->getTopVar());
+                std::vector<BDD_ID> currentTriple = {current->getLow(),current->getHigh(),current->getTopVar()};
+                for (const auto & table: uniqueTable->getTable()) {
+                    if (table->getTriple() == currentTriple) {
+                        return table->getID();
+                    }
+                }
+                uniqueTable->insertEntry(entry);
+                return id;
+            }*/
             std::set<BDD_ID> ids {i,t,e};
             BDD_ID top_var = uniqueTableSize();
             //! Find the top variables
@@ -78,8 +95,8 @@ namespace ClassProject {
             auto entry = new UniqueTableEntry(id, currentNode, high, low, top_var);
             std::vector<BDD_ID> currentTriple = {high,low,top_var};
             for (const auto & table: uniqueTable->getTable()) {
-                if (table->getTriple() == currentTriple) {
-                    return table->getID();
+                if (table.second->getTriple() == currentTriple) {
+                    return table.second->getID();
                 }
             }
             uniqueTable->insertEntry(entry);
@@ -123,7 +140,8 @@ namespace ClassProject {
         }
         //Cofactor for Top variable
         BDD_ID Manager::coFactorFalse(const BDD_ID f) {
-            return coFactorFalse(f, topVar(f));
+            auto top_f = topVar(f);
+            return coFactorFalse(f, top_f);
         }
 
         BDD_ID Manager::and2(const BDD_ID a, const BDD_ID b) {
@@ -145,6 +163,9 @@ namespace ClassProject {
         }
 
         BDD_ID Manager::neg(const BDD_ID a) {
+            //! xor = ite(a,0,1)
+            currentNode = "not";
+            //return ite(a,0,1);
             //! For trivial cases: return the opposite
 
             //! For non trivial cases: switch high and low successor and find or add to table
@@ -158,8 +179,8 @@ namespace ClassProject {
             auto entry = new UniqueTableEntry(id, "neg", current->getLow(), current->getHigh(), current->getTopVar());
             std::vector<BDD_ID> currentTriple = {current->getLow(),current->getHigh(),current->getTopVar()};
             for (const auto & table: uniqueTable->getTable()) {
-                if (table->getTriple() == currentTriple) {
-                    return table->getID();
+                if (table.second->getTriple() == currentTriple) {
+                    return table.second->getID();
                 }
             }
             uniqueTable->insertEntry(entry);

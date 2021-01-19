@@ -171,12 +171,28 @@ TEST_F(ManagerTest, neg) {
     /** Check for correct variable creation in the unique table
      */
     ClassProject::BDD_ID a = manager->createVar("a");
+    ClassProject::BDD_ID b = manager->createVar("b");
+    ClassProject::BDD_ID c = manager->createVar("c");
+    ClassProject::BDD_ID d = manager->createVar("d");
     //! First: Test the terminal cases
     EXPECT_EQ(manager->neg(1), 0 );
     EXPECT_EQ(manager->neg(0), 1 );
     //! First: Test with Variable
+
+
+
     auto entry = manager->getUniqueTable()->getEntry(a);
     auto entry_neg = manager->getUniqueTable()->getEntry(manager->neg(a));
+    EXPECT_EQ(entry->getTopVar(), a );
+    EXPECT_EQ(entry->getLow(), entry_neg->getHigh() );
+    EXPECT_EQ(entry->getHigh(), entry_neg->getLow() );
+
+    auto id1 = manager->and2(a,b);
+    auto id2 = manager->xor2(c,d);
+    auto complex_entry = manager->or2(id1,id2);
+    entry = manager->getUniqueTable()->getEntry(complex_entry);
+    entry_neg = manager->getUniqueTable()->getEntry(manager->neg(complex_entry));
+
     EXPECT_EQ(entry->getTopVar(), a );
     EXPECT_EQ(entry->getLow(), entry_neg->getHigh() );
     EXPECT_EQ(entry->getHigh(), entry_neg->getLow() );
@@ -266,7 +282,8 @@ TEST_F(ManagerTest, coFactorFalse){
     ClassProject::BDD_ID a = manager->createVar("a");
     ClassProject::BDD_ID b = manager->createVar("b");
     ClassProject::BDD_ID a_and_b = manager->and2(a,b);
-    auto f = manager->ite (a_and_b, 0, 1) ; // Quasi neg(a_and_b)
+    auto f = manager->ite(a_and_b, 0, 1); // Quasi neg(a_and_b)
+    auto g = manager->neg(f);
     manager->getUniqueTable()->printTable();
     EXPECT_EQ(manager->coFactorFalse(f), 1);
 }

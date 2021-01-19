@@ -6,7 +6,7 @@
 #define VDSPROJECT_UNIQUETABLE_H
 
 #include "UniqueTableEntry.h"
-#include <vector>
+#include <map>
 
 namespace ClassProject {
 
@@ -26,13 +26,13 @@ namespace ClassProject {
         //! adds an entry to the table
         void insertEntry(UniqueTableEntry* entry);
         //! returns all entries
-        std::vector<UniqueTableEntry*> getTable();
+        std::map<int, UniqueTableEntry*> getTable();
         //! returns a specified entry
         UniqueTableEntry* getEntry(BDD_ID id);
         //! visualizes the table in the command line
         void printTable();
     private:
-        std::vector<UniqueTableEntry*> entries;
+        std::map<int, UniqueTableEntry*> entries;
     };
 
 

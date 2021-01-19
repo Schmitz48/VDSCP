@@ -6,7 +6,7 @@
 
 #include <iostream>
 #include <string>
-#include <gtest/gtest.h>
+//#include <gtest/gtest.h>
 
 /* Bench Circuit Manager Libray */
 #include "bench_circuit_manager.hpp"
