@@ -92,13 +92,13 @@ namespace ClassProject {
                 return high;
             }
             BDD_ID id = uniqueTableSize();
-            auto entry = new UniqueTableEntry(id, currentNode, high, low, top_var);
-            std::vector<BDD_ID> currentTriple = {high,low,top_var};
-            for (const auto & table: uniqueTable->getTable()) {
-                if (table.second->getTriple() == currentTriple) {
-                    return table.second->getID();
-                }
+
+            std::vector<BDD_ID> currentTriple = {low,high,top_var};
+            if(uniqueTable->findID(currentTriple) ) {
+                //std::cout << "Value: " << value << " " << "*value: " <<*value << std::endl;
+                return uniqueTable->getID(currentTriple);
             }
+            auto entry = new UniqueTableEntry(id, currentNode, high, low, top_var);
             uniqueTable->insertEntry(entry);
             return id;
         }
@@ -140,8 +140,7 @@ namespace ClassProject {
         }
         //Cofactor for Top variable
         BDD_ID Manager::coFactorFalse(const BDD_ID f) {
-            auto top_f = topVar(f);
-            return coFactorFalse(f, top_f);
+            return coFactorFalse(f, topVar(f));
         }
 
         BDD_ID Manager::and2(const BDD_ID a, const BDD_ID b) {
@@ -176,13 +175,14 @@ namespace ClassProject {
             } else if(current->getID() == 1) {
                 return 0;
             }
-            auto entry = new UniqueTableEntry(id, "neg", current->getLow(), current->getHigh(), current->getTopVar());
-            std::vector<BDD_ID> currentTriple = {current->getLow(),current->getHigh(),current->getTopVar()};
-            for (const auto & table: uniqueTable->getTable()) {
-                if (table.second->getTriple() == currentTriple) {
-                    return table.second->getID();
-                }
+
+            std::vector<BDD_ID> negatedTriple = {current->getHigh(), current->getLow(),current->getTopVar()};
+            uniqueTable->getID(negatedTriple);
+            if(uniqueTable->findID(negatedTriple) ) {
+                //std::cout << "Value: " << value << " " << "*value: " <<*value << std::endl;
+                return uniqueTable->getID(negatedTriple);
             }
+            auto entry = new UniqueTableEntry(id, "neg", current->getLow(), current->getHigh(), current->getTopVar());
             uniqueTable->insertEntry(entry);
             return id;
         }

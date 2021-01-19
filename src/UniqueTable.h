@@ -8,6 +8,7 @@
 #include "UniqueTableEntry.h"
 #include "../3rdParty/robin-map/include/tsl/robin_map.h"
 #include <map>
+#include <vector>
 
 namespace ClassProject {
 
@@ -27,13 +28,17 @@ namespace ClassProject {
         //! adds an entry to the table
         void insertEntry(UniqueTableEntry* entry);
         //! returns all entries
-        tsl::robin_map<int, UniqueTableEntry*> getTable();
+        std::map<int, UniqueTableEntry*> getTable();
         //! returns a specified entry
         UniqueTableEntry* getEntry(BDD_ID id);
         //! visualizes the table in the command line
         void printTable();
+
+        bool findID(std::vector<BDD_ID>);
+        BDD_ID getID(std::vector<BDD_ID>);
     private:
-        tsl::robin_map<int, UniqueTableEntry*> entries;
+        std::map<int, UniqueTableEntry*> entries;
+        std::map<std::vector<BDD_ID>, int> triple_entries;
 
     };
 
