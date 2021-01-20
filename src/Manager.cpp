@@ -71,13 +71,14 @@ namespace ClassProject {
 
             //! computed table has entry
             std::vector<BDD_ID> Triple = {e,t,i};
-            if(uniqueTable->findID(Triple) ) {
-                return uniqueTable->getID(Triple);
+            BDD_ID mem = uniqueTable->getID(Triple);
+            if(mem != -1 ) {
+                return mem;
             }
 
+            //! Find the top variables
             std::set<BDD_ID> ids {i,t,e};
             BDD_ID top_var = uniqueTableSize();
-            //! Find the top variables
             for (const auto& ite: ids) {
                 BDD_ID ite_top = uniqueTable->getEntry(ite)->getTopVar();
                 if (!uniqueTable->getEntry(ite_top)->getIsConst()) {
