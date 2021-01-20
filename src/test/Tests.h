@@ -308,8 +308,10 @@ TEST_F(ManagerTest, coFactorFalse){
     ClassProject::BDD_ID b_and_c = manager->and2(b,c);
     //! First: [one Argument] Test the terminal cases
     auto f = manager->ite(a, 0, 1);
+    manager->coFactorFalse(f);
     EXPECT_EQ(manager->coFactorFalse(f), 1);
     f = manager->ite(a, 1, 0);
+    manager->coFactorFalse(f);
     EXPECT_EQ(manager->coFactorFalse(f), 0);
 
     //! Second: [one Argument] Test with variables
@@ -339,6 +341,7 @@ TEST_F(ManagerTest, coFactorTrue){
     ClassProject::BDD_ID b_and_c = manager->and2(b,c);
     //! First: [one Argument] Test the terminal cases
     auto f = manager->ite(a, 0, 1);
+    manager->coFactorTrue(f);
     EXPECT_EQ(manager->coFactorTrue(f), 0);
     f = manager->ite(a, 1, 0);
     EXPECT_EQ(manager->coFactorTrue(f), 1);

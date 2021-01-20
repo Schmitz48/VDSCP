@@ -50,6 +50,21 @@ namespace ClassProject {
                 return i;
             } else if (t == e) {
                 return e;
+            } else if (t == 0 && e == 1) {
+
+                //! computed table has negated entry
+                std::vector<BDD_ID> Triple = {e,t,i};
+                if(uniqueTable->findID(Triple) ) {
+                    return uniqueTable->getID(Triple);
+                }
+                //! create complemented entry
+                auto entry = uniqueTable->getEntry(i);
+
+                BDD_ID id = uniqueTableSize();
+                auto new_entry = new UniqueTableEntry(id, entry, entry->complement_);
+                uniqueTable->insertEntry(new_entry);
+                return id;
+
             }
                 /*BDD_ID id = uniqueTableSize();
                 auto current = uniqueTable->getEntry(i);
@@ -171,7 +186,7 @@ namespace ClassProject {
         BDD_ID Manager::neg(const BDD_ID a) {
             //! xor = ite(a,0,1)
             currentNode = "not";
-            //return ite(a,0,1);
+            return ite(a,0,1);
             //! For trivial cases: return the opposite
 
             //! For non trivial cases: switch high and low successor and find or add to table

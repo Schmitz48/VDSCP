@@ -26,7 +26,7 @@ namespace ClassProject {
                 BDD_ID low,
                 BDD_ID top_var);
         //Constructor for complement edges
-        //UniqueTableEntry(int id, UniqueTableEntry* entry);
+        UniqueTableEntry(BDD_ID id, UniqueTableEntry* entry, bool complement);
 
         BDD_ID id_;
         std::string label_;
