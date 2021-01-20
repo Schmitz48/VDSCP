@@ -20,54 +20,6 @@ namespace ClassProject {
                                             top_var_(top_var),
                                             is_const_(false),
                                             is_var_(false){
-        setTriple();
-    }
-
-    BDD_ID& UniqueTableEntry::getID(){
-        return id_;
-    }
-
-    std::string UniqueTableEntry::getLabel(){
-        return label_;
-    }
-
-    BDD_ID UniqueTableEntry::getHigh() const{
-        return high_;
-    }
-
-    BDD_ID UniqueTableEntry::getLow() const{
-        return low_;
-    }
-
-    BDD_ID UniqueTableEntry::getTopVar() const{
-        return top_var_;
-    }
-
-    void UniqueTableEntry::setIsVar() {
-        this->is_var_ = true;
-    }
-
-    void UniqueTableEntry::setIsConst() {
-        this->is_const_ = true;
-    }
-
-    bool UniqueTableEntry::getIsVar() const {
-        return this->is_var_;
-    }
-
-    bool UniqueTableEntry::getIsConst() const {
-        return this->is_const_;
-    }
-
-    void UniqueTableEntry::setTriple() {
-        triple_.clear();
-        triple_.push_back(high_);
-        triple_.push_back(low_);
-        triple_.push_back(top_var_);
-    }
-
-    std::vector<BDD_ID> UniqueTableEntry::getTriple() {
-        return triple_;
     }
 
 }

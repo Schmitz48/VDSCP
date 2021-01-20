@@ -16,8 +16,6 @@ namespace ClassProject {
     i.e, id, label, high successor, low successor and the top variable.
     This information can be accessed by the getter functions of this class.
     Additionally, the two boolean flags is_var_ and is_const_ can be read.
-    The triple {high successor, low successor, top variable} is to determine whether
-    the entry is unique or not and can also be accessed by a getter function.
     */
 
     class UniqueTableEntry{
@@ -27,25 +25,9 @@ namespace ClassProject {
                 BDD_ID high,
                 BDD_ID low,
                 BDD_ID top_var);
+        //Constructor for complement edges
+        //UniqueTableEntry(int id, UniqueTableEntry* entry);
 
-        //Getter
-        BDD_ID& getID();
-        std::string getLabel();
-        BDD_ID getHigh() const;
-        BDD_ID getLow() const;
-        BDD_ID getTopVar() const;
-        bool getIsVar() const;
-        bool getIsConst() const;
-        std::vector<BDD_ID> getTriple();
-
-
-        //Setter
-
-        void setIsVar();
-        void setIsConst();
-        void setTriple();
-
-    private:
         BDD_ID id_;
         std::string label_;
         BDD_ID high_;
@@ -53,6 +35,7 @@ namespace ClassProject {
         BDD_ID top_var_;
         bool is_var_;
         bool is_const_;
+        bool complement_;
         std::vector<BDD_ID> triple_;
     };
 

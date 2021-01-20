@@ -14,9 +14,9 @@ namespace ClassProject {
         entries.insert(std::pair<int, UniqueTableEntry*>(0, entry));
         std::vector<BDD_ID> Triple = {0,0,0};
         triple_entries.insert(std::pair<std::vector<BDD_ID>, int>(Triple, 0));
-        entry->setIsConst();
+        entry->is_const_ = true;
         entry = new UniqueTableEntry(1, "1", 1,1,1);
-        entry->setIsConst();
+        entry->is_const_ = true;
         entries.insert(std::pair<int, UniqueTableEntry*>(1, entry));
         std::vector<BDD_ID> Triple1 = {1,1,1};
         triple_entries.insert(std::pair<std::vector<BDD_ID>, int>(Triple1, 1));
@@ -25,7 +25,7 @@ namespace ClassProject {
     void UniqueTable::insertEntry(UniqueTableEntry* entry) {
         int id = entries.size();
         entries.insert(std::pair<int, UniqueTableEntry*>(id, entry));
-        std::vector<BDD_ID> Triple = {entry->getLow(),entry->getHigh(),entry->getTopVar()};
+        std::vector<BDD_ID> Triple = {entry->low_,entry->high_,entry->top_var_};
         triple_entries.insert(std::pair<std::vector<BDD_ID>, int>(Triple, id));
     }
 
@@ -41,7 +41,7 @@ namespace ClassProject {
         std::cout << "ID\t" << "| Label\t" <<  "| High\t" << "| Low\t" << "| TopVar\t" << std::endl;
         std::cout << "====================================" << std::endl;
         for(const auto & entry: entries) {
-            std::cout << entry.second->getID() << "\t| " << entry.second->getLabel() <<"\t\t| " << entry.second->getHigh() << "\t\t| " << entry.second->getLow() << "\t\t| " << entry.second->getTopVar() << std::endl;
+            std::cout << entry.second->id_ << "\t| " << entry.second->label_ <<"\t\t| " << entry.second->high_ << "\t\t| " << entry.second->low_ << "\t\t| " << entry.second->top_var_ << std::endl;
         }
     }
 
