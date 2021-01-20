@@ -68,6 +68,13 @@ namespace ClassProject {
                 uniqueTable->insertEntry(entry);
                 return id;
             }*/
+
+            //! computed table has entry
+            std::vector<BDD_ID> Triple = {e,t,i};
+            if(uniqueTable->findID(Triple) ) {
+                return uniqueTable->getID(Triple);
+            }
+
             std::set<BDD_ID> ids {i,t,e};
             BDD_ID top_var = uniqueTableSize();
             //! Find the top variables
