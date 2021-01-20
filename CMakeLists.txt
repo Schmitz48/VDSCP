@@ -52,9 +52,7 @@ link_directories(${CMAKE_SOURCE_DIR}/src/verify/)
 include_directories(${CMAKE_SOURCE_DIR}/3rdParty/robin-map/include/tsl)
 
 add_subdirectory(src)
-add_subdirectory(3rdParty/robin-map)
 
 add_executable(VDSProject src/main.cpp)
 target_link_libraries(VDSProject Manager)
-target_link_libraries(VDSProject tsl::robin_map)
 
