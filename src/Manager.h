@@ -153,14 +153,6 @@ namespace ClassProject {
        */
         void findVars(const BDD_ID &root, std::set<BDD_ID> &vars_of_root) override;
 
-        /****************************************************************************************
-        * @Function:    uniqueTableSize
-        *
-        * @Inputs:	 	-none
-        * @Outputs:		- size_t: size of the table
-        *
-        * @Description: Returns the current size of the unique table
-        ******************************************************************************************/
         /*! \fn size_t uniqueTableSize()
          \brief Returns the current size of the unique table
          */
@@ -171,6 +163,7 @@ namespace ClassProject {
     private:
         UniqueTable* uniqueTable;   /*!< The unique table representing the BDD*/
         std::string currentNode;
+        std::map<std::vector<BDD_ID>, BDD_ID> computed_table;
     };
 
 

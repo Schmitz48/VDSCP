@@ -70,16 +70,15 @@ namespace ClassProject {
             }*/
 
             //! computed table has entry
-            std::vector<BDD_ID> Triple = {e,t,i};
-            BDD_ID mem = uniqueTable->getID(Triple);
-            if(mem != -1 ) {
-                return mem;
+            std::vector<BDD_ID> ctTriple = {i,t,e};
+            auto ct_entry = computed_table.find(ctTriple);
+            if (ct_entry != computed_table.end()) {
+                return ct_entry->second;
             }
 
             //! Find the top variables
-            std::set<BDD_ID> ids {i,t,e};
             BDD_ID top_var = uniqueTableSize();
-            for (const auto& ite: ids) {
+            for (const auto& ite: ctTriple) {
                 BDD_ID ite_top = uniqueTable->getEntry(ite)->getTopVar();
                 if (!uniqueTable->getEntry(ite_top)->getIsConst()) {
                     if(top_var > ite_top) {
@@ -108,6 +107,8 @@ namespace ClassProject {
             }
             auto entry = new UniqueTableEntry(id, currentNode, high, low, top_var);
             uniqueTable->insertEntry(entry);
+            //! computed table has entry
+            computed_table.insert(std::pair<std::vector<BDD_ID>,BDD_ID>(ctTriple, id));
             return id;
         }
 
