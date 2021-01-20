@@ -98,16 +98,17 @@ namespace ClassProject {
             if (high == low) {
                 return high;
             }
-            BDD_ID id = uniqueTableSize();
+
 
             std::vector<BDD_ID> currentTriple = {low,high,top_var};
-            if(uniqueTable->findID(currentTriple) ) {
-                //std::cout << "Value: " << value << " " << "*value: " <<*value << std::endl;
-                return uniqueTable->getID(currentTriple);
+            BDD_ID mem = uniqueTable->getID(currentTriple);
+            if(mem != -1 ) {
+                return mem;
             }
+            BDD_ID id = uniqueTableSize();
             auto entry = new UniqueTableEntry(id, currentNode, high, low, top_var);
             uniqueTable->insertEntry(entry);
-            //! computed table has entry
+            //!computed table has entry
             computed_table.insert(std::pair<std::vector<BDD_ID>,BDD_ID>(ctTriple, id));
             return id;
         }

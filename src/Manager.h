@@ -10,6 +10,7 @@
 #include <list>
 #include <vector>
 #include <string>
+#include <unordered_map>
 #include "ManagerInterface.h"
 #include "UniqueTable.h"
 
@@ -21,6 +22,16 @@ namespace ClassProject {
     The Manager class inherits and implements the pure virtual functions from the ManagerInterface.
     It manages the BDD represented by the private member uniqueTable.
     */
+    struct VectorHasher {
+        int operator()(const std::vector<BDD_ID> &V) const {
+            int hash = V.size();
+            for(const auto&i:V) {
+                hash ^= i + 0x9e3779b9 + (hash << 6) + (hash >> 2);
+            }
+            return hash;
+        }
+
+    };
 
     class Manager: public ManagerInterface{
     public:
@@ -161,7 +172,9 @@ namespace ClassProject {
     private:
         UniqueTable* uniqueTable;   /*!< The unique table representing the BDD*/
         std::string currentNode;
-        std::map<std::vector<BDD_ID>, BDD_ID> computed_table;
+        //std::map<std::vector<BDD_ID>, BDD_ID> computed_table;
+        std::unordered_map<std::vector<BDD_ID>, BDD_ID, VectorHasher> computed_table;
+
     };
 
 

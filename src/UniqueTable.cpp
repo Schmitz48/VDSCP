@@ -46,8 +46,9 @@ namespace ClassProject {
     }
 
     BDD_ID UniqueTable::getID(std::vector<BDD_ID> triple) {
-        if (triple_entries.find(triple) != triple_entries.end()) {
-            return triple_entries.find(triple)->second;
+        auto search = triple_entries.find(triple);
+        if (search != triple_entries.end()) {
+            return search->second;
         } else {
             return -1;
         }

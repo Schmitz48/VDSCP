@@ -6,6 +6,7 @@
 #define VDSPROJECT_UNIQUETABLE_H
 
 #include "UniqueTableEntry.h"
+#include <unordered_map>
 #include <map>
 #include <vector>
 
@@ -20,6 +21,17 @@ namespace ClassProject {
     specific entry at a given ID. The function printTable() can be used to
     visualize its content for debugging purposes.
     */
+
+    struct VectorHasher2 {
+        int operator()(const std::vector<BDD_ID> &V) const {
+            int hash = V.size();
+            for(const auto&i:V) {
+                hash ^= i + 0x9e3779b9 + (hash << 6) + (hash >> 2);
+            }
+            return hash;
+        }
+
+    };
     class UniqueTable{
     public:
 
@@ -37,7 +49,7 @@ namespace ClassProject {
         BDD_ID getID(std::vector<BDD_ID>);
     private:
         std::map<int, UniqueTableEntry*> entries;
-        std::map<std::vector<BDD_ID>, int> triple_entries;
+        std::unordered_map<std::vector<BDD_ID>, int, VectorHasher2> triple_entries;
 
     };
 
