@@ -57,7 +57,7 @@ TEST_F(ManagerTest, ite){
     EXPECT_EQ(manager->ite(1,0,1), 0 );
     EXPECT_EQ(manager->ite(1,1,0), 1 );
     EXPECT_EQ(manager->ite(1,1,1), 1 );
-    // Test with variables
+    //! Second: Test with variables
     EXPECT_EQ(manager->ite(0,a,b), b );
     EXPECT_EQ(manager->ite(1,a,b), a );
     EXPECT_EQ(manager->ite(a,1,0), a );
