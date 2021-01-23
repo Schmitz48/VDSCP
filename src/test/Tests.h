@@ -32,7 +32,7 @@ TEST_F(ManagerTest, createVar) {
     ClassProject::BDD_ID c = manager->createVar("c");
     //! First: Test the size of the unique Table
 
-    manager->getUniqueTable()->printTable();
+    //manager->getUniqueTable()->printTable();
     EXPECT_EQ(manager->uniqueTableSize(), 5); //! Size should be 5 with 3 variables and 2 constant values
     EXPECT_EQ(manager->isVariable(a), true); //! All variables should be marked as variable
     EXPECT_EQ(manager->isVariable(b), true);
@@ -86,19 +86,19 @@ TEST_F(ManagerTest, and2) {
 
     //! Third: Test with two Variables
     ClassProject::BDD_ID ID = manager->and2(2,3);
-    auto entry = manager->getUniqueTable()->getEntry(ID);
+    auto entry = manager->getUniqueTable().find(ID)->second;
     EXPECT_EQ(entry->getTopVar(), 2 ); //Topvar of 2,3 is expected to be 2
     EXPECT_EQ(entry->getLow(), 0 ); //Low successor is false
     EXPECT_EQ(entry->getHigh(), 3 ); //High successor is expected to be the other variable
 
     ID = manager->and2(4,5); // c*d
-    entry = manager->getUniqueTable()->getEntry(ID);
+    entry = manager->getUniqueTable().find(ID)->second;
     EXPECT_EQ(entry->getTopVar(), 4 ); //Topvar of 4,5 is expected to be 4
     EXPECT_EQ(entry->getLow(), 0 ); //Low successor is false
     EXPECT_EQ(entry->getHigh(), 5 ); //High successor is expected to be the other variable
 
     auto ID2 = manager->and2(6,7); // ((a*b)*(c*d))
-    auto entry2 = manager->getUniqueTable()->getEntry(ID2);
+    auto entry2 = manager->getUniqueTable().find(ID2)->second;
     EXPECT_EQ(entry2->getTopVar(), 2 ); //Topvar of 2,3,4,5 is expected to be 2
     EXPECT_EQ(entry2->getLow(), 0 ); //Low successor is false
 
@@ -125,19 +125,19 @@ TEST_F(ManagerTest, or2) {
 
     //! Third: Test with two Variables
     ClassProject::BDD_ID ID = manager->or2(2,3); // a+b
-    auto entry = manager->getUniqueTable()->getEntry(ID);
+    auto entry = manager->getUniqueTable().find(ID)->second;
     EXPECT_EQ(entry->getTopVar(), 2 ); //Topvar of 2,3 is expected to be 2
     EXPECT_EQ(entry->getLow(), 3 ); //Low successor is expected to be the other variable
     EXPECT_EQ(entry->getHigh(), 1 ); //High successor is expected to be true
 
     ID = manager->or2(4,5); // c+d
-    entry = manager->getUniqueTable()->getEntry(ID);
+    entry = manager->getUniqueTable().find(ID)->second;
     EXPECT_EQ(entry->getTopVar(), 4 ); //Topvar of 4,5 is expected to be 4
     EXPECT_EQ(entry->getLow(), 5 ); //Low successor is expected to be the other variable
     EXPECT_EQ(entry->getHigh(), 1 ); //High successor is expected to be true
 
     auto ID2 = manager->or2(6,7); // ((a+b)+(c+d)
-    auto entry2 = manager->getUniqueTable()->getEntry(ID2);
+    auto entry2 = manager->getUniqueTable().find(ID2)->second;
     EXPECT_EQ(entry2->getTopVar(), 2 ); //Topvar of 2,3,4,5 is expected to be 2
     EXPECT_EQ(entry2->getHigh(), 1 );
     EXPECT_EQ(entry2->getLow(), ID+1 );    //Low successor is expected to be ite(b,1,7),
@@ -166,21 +166,21 @@ TEST_F(ManagerTest, xor2) {
 
     //! Third: Test with two Variables
     ClassProject::BDD_ID a_xor_b = manager->xor2(a,b); // a xor b
-    auto entry = manager->getUniqueTable()->getEntry(a_xor_b);
+    auto entry = manager->getUniqueTable().find(a_xor_b)->second;
     EXPECT_EQ(entry->getTopVar(), a ); //Topvar of 2,3 is expected to be 2
     EXPECT_EQ(entry->getLow(), b ); //Low successor is expected to be the other variable
     EXPECT_EQ(entry->getHigh(), manager->neg(b) ); //High successor is expected to be
                                                              //the negated other variable
 
     ClassProject::BDD_ID c_xor_d = manager->xor2(c,d); // c xor d
-    entry = manager->getUniqueTable()->getEntry(c_xor_d);
+    entry = manager->getUniqueTable().find(c_xor_d)->second;
     EXPECT_EQ(entry->getTopVar(), c ); //Topvar of 4,5 is expected to be 4
     EXPECT_EQ(entry->getLow(), d ); //Low successor is expected to be the other variable
     EXPECT_EQ(entry->getHigh(), manager->neg(d) ); //High successor is expected to be
                                                              //the negated other variable
 
     auto ID2 = manager->xor2(a_xor_b,c_xor_d); // ((a xor b) xor (c xor d)
-    auto entry2 = manager->getUniqueTable()->getTable().at(ID2);
+    auto entry2 = manager->getUniqueTable().find(ID2)->second;
     // manager->getUniqueTable()->printTable();
     EXPECT_EQ(entry2->getTopVar(), a ); //Topvar of 2,3,4,5 is expected to be 2
 //    EXPECT_EQ(entry2->getHigh(), c_xor_d ); //ite(!b,!c_xor_d,c_xor_d)
@@ -203,8 +203,9 @@ TEST_F(ManagerTest, neg) {
 
 
 
-    auto entry = manager->getUniqueTable()->getEntry(a);
-    auto entry_neg = manager->getUniqueTable()->getEntry(manager->neg(a));
+    auto entry = manager->getUniqueTable().find(a)->second;
+    auto id_neg = manager->neg(a);
+    auto entry_neg = manager->getUniqueTable().find(id_neg)->second;
     EXPECT_EQ(entry->getTopVar(), a );
     EXPECT_EQ(entry->getLow(), entry_neg->getHigh() );
     EXPECT_EQ(entry->getHigh(), entry_neg->getLow() );
@@ -212,8 +213,9 @@ TEST_F(ManagerTest, neg) {
     auto id1 = manager->and2(a,b);
     auto id2 = manager->xor2(c,d);
     auto complex_entry = manager->or2(id1,id2);
-    entry = manager->getUniqueTable()->getEntry(complex_entry);
-    entry_neg = manager->getUniqueTable()->getEntry(manager->neg(complex_entry));
+    entry = manager->getUniqueTable().find(complex_entry)->second;
+    id_neg = manager->neg(complex_entry);
+    entry_neg = manager->getUniqueTable().find(id_neg)->second;
 
     EXPECT_EQ(entry->getTopVar(), a );
     EXPECT_EQ(entry->getLow(), entry_neg->getHigh() );
@@ -243,19 +245,19 @@ TEST_F(ManagerTest, nand2) {
 
     //! Third: Test with two Variables
     ClassProject::BDD_ID a_nand_b = manager->nand2(a,b);
-    auto entry = manager->getUniqueTable()->getEntry(a_nand_b);
+    auto entry = manager->getUniqueTable().find(a_nand_b)->second;
     EXPECT_EQ(entry->getTopVar(), a ); //Topvar of 2,3 is expected to be 2
     EXPECT_EQ(entry->getLow(), 1 ); //Low successor with false returns true
     EXPECT_EQ(entry->getHigh(), manager->neg(b) ); //High successor with true returns the negated variable
 
     ClassProject::BDD_ID c_nand_d = manager->nand2(c,d); // c*d
-    entry = manager->getUniqueTable()->getEntry(c_nand_d);
+    entry = manager->getUniqueTable().find(c_nand_d)->second;
     EXPECT_EQ(entry->getTopVar(), c ); //Topvar of 4,5 is expected to be 4
     EXPECT_EQ(entry->getLow(), 1 ); //Low successor with false returns true
     EXPECT_EQ(entry->getHigh(), manager->neg(d) ); //High successor with true returns the negated variable
 
     auto nanded_nands = manager->nand2(a_nand_b,c_nand_d); // ((a*b)*(c*d))
-    entry = manager->getUniqueTable()->getEntry(nanded_nands);
+    entry = manager->getUniqueTable().find(nanded_nands)->second;
     EXPECT_EQ(entry->getTopVar(), a ); //Topvar of a,b,c,d is expected to be a
     //EXPECT_EQ(entry->getLow(), 0 ); //Low successor is false
 
@@ -283,19 +285,19 @@ TEST_F(ManagerTest, nor2) {
 
     //! Third: Test with two Variables
     ClassProject::BDD_ID a_nor_b = manager->nor2(a,b);
-    auto entry = manager->getUniqueTable()->getEntry(a_nor_b);
+    auto entry = manager->getUniqueTable().find(a_nor_b)->second;
     EXPECT_EQ(entry->getTopVar(), a ); //Topvar of 2,3 is expected to be 2
     EXPECT_EQ(entry->getLow(), manager->neg(b) ); //Low successor with false returns the negated variable
     EXPECT_EQ(entry->getHigh(), 0 ); //High successor with true returns false
 
     ClassProject::BDD_ID c_nor_d = manager->nor2(c,d); // c*d
-    entry = manager->getUniqueTable()->getEntry(c_nor_d);
+    entry = manager->getUniqueTable().find(c_nor_d)->second;
     EXPECT_EQ(entry->getTopVar(), c ); //Topvar of 4,5 is expected to be 4
     EXPECT_EQ(entry->getLow(), manager->neg(d)  ); //Low successor with false returns the negated variable
     EXPECT_EQ(entry->getHigh(), 0); //High successor with true returns false
 
     auto nored_nors = manager->nand2(a_nor_b,c_nor_d); // ((a*b)*(c*d))
-    entry = manager->getUniqueTable()->getEntry(nored_nors);
+    entry = manager->getUniqueTable().find(nored_nors)->second;
     EXPECT_EQ(entry->getTopVar(), a ); //Topvar of a,b,c,d is expected to be a
     //EXPECT_EQ(entry->getLow(), 0 ); //Low successor is false
 }

@@ -12,7 +12,7 @@
 #include <string>
 #include <unordered_map>
 #include "ManagerInterface.h"
-#include "UniqueTable.h"
+#include "UniqueTableEntry.h"
 
 namespace ClassProject {
 
@@ -167,13 +167,14 @@ namespace ClassProject {
          */
         size_t uniqueTableSize() override;
 
-        UniqueTable* getUniqueTable();
+        std::unordered_map<int, UniqueTableEntry*> getUniqueTable();
 
     private:
-        UniqueTable* uniqueTable;   /*!< The unique table representing the BDD*/
         std::string currentNode;
         //std::map<std::vector<BDD_ID>, BDD_ID> computed_table;
-        std::unordered_map<std::vector<BDD_ID>, BDD_ID, VectorHasher> computed_table;
+        std::unordered_map<std::vector<BDD_ID>, BDD_ID, VectorHasher> computed_table; //! For ite storage
+        std::unordered_map<std::vector<BDD_ID>, BDD_ID, VectorHasher> triple_table; //!For find_or_add_unique table
+        std::unordered_map<int, UniqueTableEntry*> uniqueTable; //! Unique Table
 
     };
 

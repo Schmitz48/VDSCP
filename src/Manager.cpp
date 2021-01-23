@@ -9,35 +9,43 @@
 namespace ClassProject {
 
         Manager::Manager() {
-            uniqueTable = new UniqueTable();
+
+            auto entry = new UniqueTableEntry(0, "0", 0, 0, 0);
+            uniqueTable.insert(std::pair<int, UniqueTableEntry*>(0, entry));
+            triple_table.insert(std::pair<std::vector<BDD_ID>, BDD_ID>({0,0,0}, 0));
+            entry->setIsConst();
+            entry = new UniqueTableEntry(1, "1", 1,1,1);
+            entry->setIsConst();
+            uniqueTable.insert(std::pair<int, UniqueTableEntry*>(1, entry));
+            triple_table.insert(std::pair<std::vector<BDD_ID>, BDD_ID>({1,1,1}, 1));
         }
 
         BDD_ID Manager::createVar(const std::string &label) {
             BDD_ID id = uniqueTableSize();
             auto entry = new UniqueTableEntry( id, label,1,0,id);
             entry->setIsVar();
-            uniqueTable->insertEntry(entry);
+            uniqueTable.insert(std::pair<int, UniqueTableEntry*>(id, entry));
             return id;
         }
 
         const BDD_ID &Manager::True() {
-            return uniqueTable->getEntry(1)->getID();
+            return uniqueTable.find(1)->second->getID();
         }
 
         const BDD_ID &Manager::False() {
-            return uniqueTable->getEntry(0)->getID();
+            return uniqueTable.find(0)->second->getID();
         }
 
         bool Manager::isConstant(const BDD_ID f) {
-            return uniqueTable->getEntry(f)->getIsConst();
+            return uniqueTable.find(f)->second->getIsConst();
         }
 
         bool Manager::isVariable(const BDD_ID x) {
-            return uniqueTable->getEntry(x)->getIsVar();
+            return uniqueTable.find(x)->second->getIsVar();
         }
 
         BDD_ID Manager::topVar(const BDD_ID f) {
-            return uniqueTable->getEntry(f)->getTopVar();
+            return uniqueTable.find(f)->second->getTopVar();
         }
 
         BDD_ID Manager::ite(const BDD_ID i, const BDD_ID t, const BDD_ID e) {
@@ -79,8 +87,8 @@ namespace ClassProject {
             //! Find the top variables
             BDD_ID top_var = uniqueTableSize();
             for (const auto& ite: ctTriple) {
-                BDD_ID ite_top = uniqueTable->getEntry(ite)->getTopVar();
-                if (!uniqueTable->getEntry(ite_top)->getIsConst()) {
+                BDD_ID ite_top = uniqueTable.find(ite)->second->getTopVar();
+                if (!uniqueTable.find(ite)->second->getIsConst()) {
                     if(top_var > ite_top) {
                         top_var = ite_top;
                     }
@@ -100,22 +108,25 @@ namespace ClassProject {
             }
 
 
-            std::vector<BDD_ID> currentTriple = {low,high,top_var};
-            BDD_ID mem = uniqueTable->getID(currentTriple);
-            if(mem != -1 ) {
-                return mem;
+            std::vector<BDD_ID> currentTriple = {top_var,high,low};
+            auto ut_entry = triple_table.find(currentTriple);
+            if (ut_entry != computed_table.end()) {
+                return ut_entry->second;
             }
+
             BDD_ID id = uniqueTableSize();
             auto entry = new UniqueTableEntry(id, currentNode, high, low, top_var);
-            uniqueTable->insertEntry(entry);
-            //!computed table has entry
+            uniqueTable.insert(std::pair<int, UniqueTableEntry*>(id, entry));
+            //!add entry to tables
+            triple_table.insert(std::pair<std::vector<BDD_ID>, BDD_ID>(currentTriple, id));
+
             computed_table.insert(std::pair<std::vector<BDD_ID>,BDD_ID>(ctTriple, id));
             return id;
         }
 
         BDD_ID Manager::coFactorTrue(const BDD_ID f, BDD_ID x) {
-            auto f_entry = uniqueTable->getEntry(f);
-            auto x_entry = uniqueTable->getEntry(x);
+            auto f_entry = uniqueTable.find(f)->second;
+            auto x_entry = uniqueTable.find(x)->second;
             bool terminal = f_entry->getIsConst() || x_entry->getIsConst() || f_entry->getTopVar() > x;
             if(terminal) {
                 return f;
@@ -130,8 +141,8 @@ namespace ClassProject {
         }
 
         BDD_ID Manager::coFactorFalse(const BDD_ID f, BDD_ID x) {
-            auto f_entry = uniqueTable->getEntry(f);
-            auto x_entry = uniqueTable->getEntry(x);
+            auto f_entry = uniqueTable.find(f)->second;
+            auto x_entry = uniqueTable.find(x)->second;
             bool terminal = f_entry->getIsConst() || x_entry->getIsConst() || f_entry->getTopVar() > x;
             if(terminal) {
                 return f;
@@ -179,21 +190,22 @@ namespace ClassProject {
 
             //! For non trivial cases: switch high and low successor and find or add to table
             BDD_ID id = uniqueTableSize();
-            auto current = uniqueTable->getEntry(a);
+            auto current = uniqueTable.find(a)->second;
             if (current->getID() == 0) {
                 return 1;
             } else if(current->getID() == 1) {
                 return 0;
             }
 
-            std::vector<BDD_ID> negatedTriple = {current->getHigh(), current->getLow(),current->getTopVar()};
-            uniqueTable->getID(negatedTriple);
-            if(uniqueTable->findID(negatedTriple) ) {
-                //std::cout << "Value: " << value << " " << "*value: " <<*value << std::endl;
-                return uniqueTable->getID(negatedTriple);
+            //! unique table has entry
+            std::vector<BDD_ID> negatedTriple = {current->getTopVar(),current->getLow(),current->getHigh()};
+            auto ut_entry = triple_table.find(negatedTriple);
+            if (ut_entry != computed_table.end()) {
+                return ut_entry->second;
             }
             auto entry = new UniqueTableEntry(id, "neg", current->getLow(), current->getHigh(), current->getTopVar());
-            uniqueTable->insertEntry(entry);
+            uniqueTable.insert(std::pair<int, UniqueTableEntry*>(id, entry));
+            triple_table.insert(std::pair<std::vector<BDD_ID>, BDD_ID>(negatedTriple, id));
             return id;
         }
 
@@ -210,7 +222,7 @@ namespace ClassProject {
         }
 
         std::string Manager::getTopVarName(const BDD_ID &root) {
-            return uniqueTable->getEntry(topVar(root))->getLabel();
+            return uniqueTable.find(topVar(root))->second->getLabel();
         }
 
         void Manager::findNodes(const BDD_ID &root, std::set<BDD_ID> &nodes_of_root) {
@@ -218,7 +230,7 @@ namespace ClassProject {
             queue.push_back(root);
             nodes_of_root.insert(root);
             while(!queue.empty()) {
-                auto queue_entry = uniqueTable->getEntry(queue.front());
+                auto queue_entry = uniqueTable.find(queue.front())->second;
                 if(!queue_entry->getIsConst()) {
                     queue.push_back(queue_entry->getHigh());
                     queue.push_back(queue_entry->getLow());
@@ -237,7 +249,7 @@ namespace ClassProject {
             }
             queue.push_back(root);
             while(!queue.empty()) {
-                auto queue_entry = uniqueTable->getEntry(queue.front());
+                auto queue_entry = uniqueTable.find(queue.front())->second;
                 if(!queue_entry->getIsConst()) {
                     queue.push_back(queue_entry->getHigh());
                     queue.push_back(queue_entry->getLow());
@@ -250,10 +262,10 @@ namespace ClassProject {
         }
 
         size_t Manager::uniqueTableSize() {
-            return uniqueTable->getTable().size();
+            return uniqueTable.size();
         }
 
-        UniqueTable* Manager::getUniqueTable() {
+        std::unordered_map<int, UniqueTableEntry*> Manager::getUniqueTable() {
             return this->uniqueTable;
         }
 
