@@ -464,6 +464,47 @@ TEST_F(ManagerTest, findVars) {
 
 }
 
+TEST_F(ManagerTest, test_1713_BDD) {
+    /* Check findNodes()*/
+    ClassProject::BDD_ID a = manager->createVar("50");
+    ClassProject::BDD_ID b = manager->createVar("58");
+    ClassProject::BDD_ID c = manager->createVar("68");
+    ClassProject::BDD_ID d = manager->createVar("77");
+
+    ClassProject::BDD_ID not_a = manager->neg(a);
+    ClassProject::BDD_ID not_b = manager->neg(b);
+    ClassProject::BDD_ID not_c = manager->neg(c);
+    ClassProject::BDD_ID not_d = manager->neg(d);
+
+    ClassProject::BDD_ID not_a_and_not_b = manager->and2(not_a, not_b);
+    ClassProject::BDD_ID not_a_and_not_b_and_not_c = manager->and2(not_a_and_not_b, not_c);
+
+    ClassProject::BDD_ID a_1505 = manager->nand2(not_d,not_a_and_not_b_and_not_c);
+    //BDD_ID of Output 1713 of c3540
+    ClassProject::BDD_ID a_1713 = manager->neg(a_1505);
+
+    ClassProject::BDD_ID not_c_and_not_d = manager->and2(not_c, not_d);
+    //BDD_ID of !a!b!c!d
+    ClassProject::BDD_ID not_and_all = manager->and2(not_a_and_not_b, not_c_and_not_d);
+
+    EXPECT_EQ(not_and_all,a_1713);
+
+    std::set<ClassProject::BDD_ID> nodes;
+    std::set<ClassProject::BDD_ID> x_nodes;
+
+    std::set<ClassProject::BDD_ID> vars;
+    std::set<ClassProject::BDD_ID> x_vars;
+
+    x_vars = {2,3,4,5};
+    manager->findVars(a_1713,vars);
+    EXPECT_EQ(vars,x_vars);
+
+    //x_nodes = {2,3,4,5};
+    //manager->findNodes(a_1713,nodes);
+    //EXPECT_EQ(nodes,x_nodes);
+}
+
+
 
 
 #endif //VDS_PROJECT_TESTS_H
