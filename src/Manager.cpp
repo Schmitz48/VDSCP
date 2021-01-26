@@ -121,7 +121,7 @@ namespace ClassProject {
 
             std::vector<BDD_ID> currentTriple = {top_var,high,low};
             auto ut_entry = triple_table.find(currentTriple);
-            if (ut_entry != computed_table.end()) {
+            if (ut_entry != triple_table.end()) {
                 return ut_entry->second;
             }
 
@@ -129,9 +129,9 @@ namespace ClassProject {
             auto entry = new UniqueTableEntry(id, currentNode, high, low, top_var);
             uniqueTable.insert(std::pair<int, UniqueTableEntry*>(id, entry));
             //!add entry to tables
-            triple_table.insert(std::pair<std::vector<BDD_ID>, BDD_ID>(currentTriple, id));
+            triple_table.insert(std::make_pair(currentTriple, id));
 
-            computed_table.insert(std::pair<std::vector<BDD_ID>,BDD_ID>(ctTriple, id));
+            computed_table.insert(std::make_pair(ctTriple, id));
             return id;
         }
 

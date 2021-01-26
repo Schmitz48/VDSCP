@@ -199,11 +199,20 @@ TEST_F(ManagerTest, neg) {
     //! First: Test the terminal cases
     EXPECT_EQ(manager->neg(1), 0 );
     EXPECT_EQ(manager->neg(0), 1 );
+
     //! First: Test with Variable
+    auto Aab = manager->and2(a,b);                      //Aab       = a*b
+    auto not_Aab = manager->neg(Aab);                   //not_Aab   = !(a*b)    = !a + !b
+    auto entry = manager->getUniqueTable().find(not_Aab)->second;
+    auto not_Aab_high = entry->getHigh();               // a=1 -> !b
+    auto entry_not_Aab_high = manager->getUniqueTable().find(not_Aab_high)->second;
+    EXPECT_EQ(entry->getTopVar(), a );
+    EXPECT_EQ(entry->getLow(), 1 );                     // !0 + !b = 1
+    EXPECT_EQ(entry->getHigh(), b );                    // !1 + !b = !b
+    EXPECT_EQ(entry_not_Aab_high->getHigh(), 0 );       // !b => !1 = 0
+    EXPECT_EQ(entry_not_Aab_high->getLow(), 1 );        // !b => !0 = 1
 
-
-
-    auto entry = manager->getUniqueTable().find(a)->second;
+    entry = manager->getUniqueTable().find(a)->second;
     auto id_neg = manager->neg(a);
     auto entry_neg = manager->getUniqueTable().find(id_neg)->second;
     EXPECT_EQ(entry->getTopVar(), a );
