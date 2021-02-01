@@ -168,13 +168,15 @@ namespace ClassProject {
         size_t uniqueTableSize() override;
 
         std::unordered_map<int, UniqueTableEntry*> getUniqueTable();
-
+        std::unordered_map<BDD_ID, BDD_ID> getNegationTable();
+        void print_map(std::unordered_map<BDD_ID, BDD_ID> const &m);
     private:
         std::string currentNode;
         //std::map<std::vector<BDD_ID>, BDD_ID> computed_table;
         std::unordered_map<std::vector<BDD_ID>, BDD_ID, VectorHasher> computed_table; //! For ite storage
         std::unordered_map<std::vector<BDD_ID>, BDD_ID, VectorHasher> triple_table; //!For find_or_add_unique table
         std::unordered_map<int, UniqueTableEntry*> uniqueTable; //! Unique Table
+        std::unordered_map<BDD_ID, BDD_ID> negation_Table; //! Hold ID of negated Table entries of Unique table
 
     };
 

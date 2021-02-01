@@ -58,35 +58,7 @@ namespace ClassProject {
                 return i;
             } else if (t == e) {
                 return e;
-            } else if (t == 0 && e == 1) {
-
-                //! computed table has entry
-                std::vector<BDD_ID> ctTriple = {i,t,e};
-                auto ct_entry = computed_table.find(ctTriple);
-                if (ct_entry != computed_table.end()) {
-                    return ct_entry->second;
-                }
-
-                BDD_ID id = uniqueTableSize();
-                auto current = uniqueTable.find(i)->second;
-                if (current->getID() == 0) {
-                    return 1;
-                } else if(current->getID() == 1) {
-                    return 0;
-                }
-
-                //! unique table has entry
-                std::vector<BDD_ID> negatedTriple = {current->getTopVar(),current->getLow(),current->getHigh()};
-                auto ut_entry = triple_table.find(negatedTriple);
-                if (ut_entry != computed_table.end()) {
-                    return ut_entry->second;
-                }
-                auto entry = new UniqueTableEntry(id, "neg", current->getLow(), current->getHigh(), current->getTopVar());
-                uniqueTable.insert(std::pair<int, UniqueTableEntry*>(id, entry));
-                triple_table.insert(std::pair<std::vector<BDD_ID>, BDD_ID>(negatedTriple, id));
-                return id;
             }
-
 
             //! computed table has entry
             std::vector<BDD_ID> ctTriple = {i,t,e};
@@ -196,7 +168,37 @@ namespace ClassProject {
         BDD_ID Manager::neg(const BDD_ID a) {
             //! xor = ite(a,0,1)
             currentNode = "not";
-            return ite(a,0,1);
+            //return ite(a,0,1);
+            auto a_entry = uniqueTable.find(a)->second;
+            //auto n_entry = negation_Table.find(a)->second;
+            auto n_entry = negation_Table.find(a);
+            if (n_entry != negation_Table.end()) {
+                return n_entry->second;
+            }
+            auto high = a_entry->getHigh();
+            auto low  = a_entry->getLow();
+            BDD_ID new_high;
+            BDD_ID new_low;
+            //! new_high
+            if (high==0){
+                new_high = 1;
+            }else if(high==1){
+                new_high = 0;
+            }else {
+                new_high = neg(high);
+            }
+            //! new_low
+            if (low==0){
+                new_low = 1;
+            }else if(low==1){
+                new_low = 0;
+            }else {
+                new_low = neg(low);
+            }
+            BDD_ID neg_id = ite(a,new_high,new_low);
+            negation_Table.insert(std::make_pair(a,neg_id));
+            negation_Table.insert(std::make_pair(neg_id,a));
+            return neg_id ;
         }
 
         BDD_ID Manager::nand2(const BDD_ID a, const BDD_ID b) {
@@ -257,6 +259,17 @@ namespace ClassProject {
 
         std::unordered_map<int, UniqueTableEntry*> Manager::getUniqueTable() {
             return this->uniqueTable;
+        }
+
+        std::unordered_map<BDD_ID, BDD_ID> Manager::getNegationTable() {
+            return this->negation_Table;
+        }
+
+        void Manager::print_map(std::unordered_map<BDD_ID, BDD_ID> const &m)
+        {
+            for (auto const& pair: m) {
+                std::cout << "{" << pair.first << ": " << pair.second << "}\n";
+            }
         }
 
 }
