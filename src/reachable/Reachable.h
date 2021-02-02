@@ -63,10 +63,16 @@ namespace ClassProject {
          * @return
          */
         bool is_reachable(const std::vector<bool>& stateVector) override;
+
+        Manager* getManager() {
+            return manager;
+        }
     private:
         unsigned int stateSize;
-        std::vector<BDD_ID> stateVector;
+        std::vector<BDD_ID> stateVector_;
         Manager* manager;
+        std::vector<BDD_ID> functions;
+        std::vector<bool> initVector;
 
     };
 
