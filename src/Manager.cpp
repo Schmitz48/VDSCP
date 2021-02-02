@@ -25,6 +25,7 @@ namespace ClassProject {
             auto entry = new UniqueTableEntry( id, label,1,0,id);
             entry->setIsVar();
             uniqueTable.insert(std::pair<int, UniqueTableEntry*>(id, entry));
+            triple_table.insert(std::pair<std::vector<BDD_ID>, BDD_ID>({id,1,0}, id));
             return id;
         }
 
@@ -67,7 +68,7 @@ namespace ClassProject {
                     return ct_entry->second;
                 }
 
-                BDD_ID id = uniqueTableSize();
+int sdcs;
                 auto current = uniqueTable.find(i)->second;
                 if (current->getID() == 0) {
                     return 1;
@@ -75,15 +76,36 @@ namespace ClassProject {
                     return 0;
                 }
 
+                BDD_ID new_low;
+                BDD_ID new_high;
+
+                if(current->getLow() == 0) {
+                    new_low = 1;
+                } else if(current->getLow() == 1) {
+                    new_low = 0;
+                } else {
+                    new_low = neg(current->getLow());
+                }
+
+                if(current->getHigh() == 0) {
+                    new_high = 1;
+                } else if(current->getHigh() == 1) {
+                    new_high = 0;
+                } else {
+                    new_high = neg(current->getHigh());
+                }
+
                 //! unique table has entry
-                std::vector<BDD_ID> negatedTriple = {current->getTopVar(),current->getLow(),current->getHigh()};
+                std::vector<BDD_ID> negatedTriple = {current->getTopVar(),new_high,new_low};
                 auto ut_entry = triple_table.find(negatedTriple);
-                if (ut_entry != computed_table.end()) {
+                if (ut_entry != triple_table.end()) {
                     return ut_entry->second;
                 }
-                auto entry = new UniqueTableEntry(id, "neg", current->getLow(), current->getHigh(), current->getTopVar());
+                BDD_ID id = uniqueTableSize();
+                auto entry = new UniqueTableEntry(id, "neg", new_high, new_low, current->getTopVar());
                 uniqueTable.insert(std::pair<int, UniqueTableEntry*>(id, entry));
                 triple_table.insert(std::pair<std::vector<BDD_ID>, BDD_ID>(negatedTriple, id));
+                computed_table.insert(std::pair<std::vector<BDD_ID>, BDD_ID>({i,t,e}, id));
                 return id;
             }
 
@@ -121,7 +143,7 @@ namespace ClassProject {
 
             std::vector<BDD_ID> currentTriple = {top_var,high,low};
             auto ut_entry = triple_table.find(currentTriple);
-            if (ut_entry != computed_table.end()) {
+            if (ut_entry != triple_table.end()) {
                 return ut_entry->second;
             }
 
@@ -129,9 +151,9 @@ namespace ClassProject {
             auto entry = new UniqueTableEntry(id, currentNode, high, low, top_var);
             uniqueTable.insert(std::pair<int, UniqueTableEntry*>(id, entry));
             //!add entry to tables
-            triple_table.insert(std::pair<std::vector<BDD_ID>, BDD_ID>(currentTriple, id));
+            triple_table.insert(std::make_pair(currentTriple, id));
 
-            computed_table.insert(std::pair<std::vector<BDD_ID>,BDD_ID>(ctTriple, id));
+            computed_table.insert(std::make_pair(ctTriple, id));
             return id;
         }
 
