@@ -27,8 +27,8 @@ jobs:
         run: |
           $GITHUB_WORKSPACE/build/src/test/VDSProject_test
       - name: Build Reachability Tests
-          run: |
-            cmake --build $GITHUB_WORKSPACE/build/ --target VDSProject_reachable -- -j8
+        run: |
+          cmake --build $GITHUB_WORKSPACE/build/ --target VDSProject_reachable -- -j8
       - name: Run Reachability Tests
-          run: |
-            $GITHUB_WORKSPACE/build/src/reachable/VDSProject_reachable
+        run: |
+          $GITHUB_WORKSPACE/build/src/reachable/VDSProject_reachable
