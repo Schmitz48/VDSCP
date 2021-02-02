@@ -13,25 +13,25 @@
 #include <unordered_map>
 #include "ManagerInterface.h"
 #include "UniqueTableEntry.h"
+#include <boost/functional/hash.hpp>
 
 namespace ClassProject {
 
+    //!  Hasher
+    /*!
+    The hash function for std::vector<BDD_ID> hashing uses boost::hash_range to implement an efficient hashing
+    */
+    struct container_hash {
+        std::size_t operator()(std::vector<BDD_ID> const& c) const {
+            return boost::hash_range(c.begin(), c.end());
+        }
+    };
 
     //!  Manager
     /*!
     The Manager class inherits and implements the pure virtual functions from the ManagerInterface.
     It manages the BDD represented by the private member uniqueTable.
     */
-    struct VectorHasher {
-        int operator()(const std::vector<BDD_ID> &V) const {
-            int hash = V.size();
-            for(const auto&i:V) {
-                hash ^= i + 0x9e3779b9 + (hash << 6) + (hash >> 2);
-            }
-            return hash;
-        }
-
-    };
 
     class Manager: public ManagerInterface{
     public:
@@ -171,9 +171,8 @@ namespace ClassProject {
 
     private:
         std::string currentNode;
-        //std::map<std::vector<BDD_ID>, BDD_ID> computed_table;
-        std::unordered_map<std::vector<BDD_ID>, BDD_ID, VectorHasher> computed_table; //! For ite storage
-        std::unordered_map<std::vector<BDD_ID>, BDD_ID, VectorHasher> triple_table; //!For find_or_add_unique table
+        std::unordered_map<std::vector<BDD_ID>, BDD_ID, container_hash> computed_table; //! For ite storage
+        std::unordered_map<std::vector<BDD_ID>, BDD_ID, container_hash> triple_table; //!For find_or_add_unique table
         std::unordered_map<int, UniqueTableEntry*> uniqueTable; //! Unique Table
 
     };

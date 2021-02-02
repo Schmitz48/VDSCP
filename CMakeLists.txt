@@ -50,9 +50,11 @@ include_directories(${CMAKE_SOURCE_DIR}/src/verify/)
 link_directories(${CMAKE_SOURCE_DIR}/src/verify/)
 
 include_directories(${CMAKE_SOURCE_DIR}/3rdParty/robin-map/include/tsl)
+find_package(Boost)
 
 add_subdirectory(src)
 
 add_executable(VDSProject src/main.cpp)
 target_link_libraries(VDSProject Manager)
+target_link_libraries(VDSProject ${Boost_LIBRARIES})
 

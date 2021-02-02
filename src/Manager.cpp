@@ -59,7 +59,8 @@ namespace ClassProject {
                 return i;
             } else if (t == e) {
                 return e;
-            } else if (t == 0 && e == 1) {
+            //! Negation
+            } else if (t == 0 && e == 1 && false) {
 
                 //! computed table has entry
                 std::vector<BDD_ID> ctTriple = {i,t,e};
@@ -67,8 +68,7 @@ namespace ClassProject {
                 if (ct_entry != computed_table.end()) {
                     return ct_entry->second;
                 }
-
-int sdcs;
+                //There has to be an entry if we want the entry negated
                 auto current = uniqueTable.find(i)->second;
                 if (current->getID() == 0) {
                     return 1;
