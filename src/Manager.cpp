@@ -1,4 +1,5 @@
 #include <cassert>
+#include <queue>
 
 #include "Manager.h"
 
@@ -238,38 +239,38 @@ namespace ClassProject {
         }
 
         void Manager::findNodes(const BDD_ID &root, std::set<BDD_ID> &nodes_of_root) {
-            std::vector<BDD_ID> queue;
-            queue.push_back(root);
+            std::queue<BDD_ID> queue;
+            queue.push(root);
             nodes_of_root.insert(root);
             while(!queue.empty()) {
                 auto queue_entry = uniqueTable.find(queue.front())->second;
                 if(!queue_entry->getIsConst()) {
-                    queue.push_back(queue_entry->getHigh());
-                    queue.push_back(queue_entry->getLow());
+                    queue.push(queue_entry->getHigh());
+                    queue.push(queue_entry->getLow());
                 }
                 nodes_of_root.insert(queue_entry->getID());
-                queue.erase(queue.begin());
+                queue.pop();
             }
 
         }
 
         void Manager::findVars(const BDD_ID &root, std::set<BDD_ID> &vars_of_root) {
 
-            std::vector<BDD_ID> queue;
+            std::queue<BDD_ID> queue;
             if (isConstant(root)) {
                 return;
             }
-            queue.push_back(root);
+            queue.push(root);
             while(!queue.empty()) {
                 auto queue_entry = uniqueTable.find(queue.front())->second;
                 if(!queue_entry->getIsConst()) {
-                    queue.push_back(queue_entry->getHigh());
-                    queue.push_back(queue_entry->getLow());
+                    queue.push(queue_entry->getHigh());
+                    queue.push(queue_entry->getLow());
                 }
                 if(!isConstant(queue_entry->getTopVar())) {
                     vars_of_root.insert(queue_entry->getTopVar());
                 }
-                queue.erase(queue.begin());
+                queue.pop();
             }
         }
 

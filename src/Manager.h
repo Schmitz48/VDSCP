@@ -17,6 +17,7 @@
 
 namespace ClassProject {
 
+
     //!  Hasher
     /*!
     The hash function for std::vector<BDD_ID> hashing uses boost::hash_range to implement an efficient hashing
@@ -171,6 +172,7 @@ namespace ClassProject {
 
     private:
         std::string currentNode;
+        //std::map<std::vector<BDD_ID>, BDD_ID> computed_table;
         std::unordered_map<std::vector<BDD_ID>, BDD_ID, container_hash> computed_table; //! For ite storage
         std::unordered_map<std::vector<BDD_ID>, BDD_ID, container_hash> triple_table; //!For find_or_add_unique table
         std::unordered_map<int, UniqueTableEntry*> uniqueTable; //! Unique Table
