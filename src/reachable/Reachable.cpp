@@ -76,7 +76,6 @@ namespace ClassProject {
 
         BDD_ID cRit = imageCs0;
         BDD_ID cR;
-        //! Everything works as expected until here
         do {
             cR = cRit;
             //compute image

@@ -73,4 +73,142 @@ TEST(managerTest, XNOR) {
 
 }
 
+/**
+ * Truth Table
+ * More extensive Test for the Reachability algorithm
+ * |    s3   |   s2  |   s1  |   s0  |   s3' |   s2' |   s1' |   s0' |
+ *
+ * |    0    |   0   |   0   |   0   |   0   |   1   |   1   |   0   |
+ * |    0    |   0   |   0   |   1   |   0   |   1   |   1   |   0   |
+ * |    0    |   0   |   1   |   0   |   0   |   1   |   1   |   0   |
+ * |    0    |   0   |   1   |   1   |   1   |   1   |   1   |   1   |
+ * |    0    |   1   |   0   |   0   |   1   |   1   |   1   |   1   |
+ * |    0    |   1   |   0   |   1   |   1   |   1   |   1   |   1   |
+ * |    0    |   1   |   1   |   0   |   1   |   1   |   1   |   1   |
+ * |    0    |   1   |   1   |   1   |   0   |   1   |   1   |   0   |
+ * |    1    |   0   |   0   |   0   |   0   |   1   |   0   |   0   |
+ * |    1    |   0   |   0   |   1   |   0   |   1   |   0   |   0   |
+ * |    1    |   0   |   1   |   0   |   0   |   1   |   0   |   0   |
+ * |    1    |   0   |   1   |   1   |   0   |   0   |   0   |   1   |
+ * |    1    |   1   |   0   |   0   |   0   |   1   |   0   |   1   |
+ * |    1    |   1   |   0   |   1   |   0   |   1   |   0   |   1   |
+ * |    1    |   1   |   1   |   0   |   0   |   1   |   0   |   1   |
+ * |    1    |   1   |   1   |   1   |   0   |   0   |   0   |  0    |
+ */
+TEST(managerTest, FourState_Example) {
+
+    ClassProject::Reachable comp(4);
+
+    auto states = comp.getStates();
+    std::vector<BDD_ID> functions;
+    auto m = comp.getManager();
+    auto s0 = states.at(0);
+    auto s1 = states.at(1);
+    auto s2 = states.at(2);
+    auto s3 = states.at(3);
+    //s0' = s2 xor s0s1
+    functions.push_back(m->xor2(s2, m->and2(s0,s1)));
+    //s1' = (!(s0s1s3)+s3)*!s3
+    functions.push_back(m->and2(m->neg(s3), m->or2(s3, m->nand2(s3, m->and2(s0,s1)))));
+    //s2' = (!(s0s1s3)
+    functions.push_back(m->nand2(s3, m->and2(s0,s1)));
+    //s3' = (!(s0s1s3)+s3)*!s3 * (s2 xor s0s1)
+    functions.push_back(m->and2(m->xor2(s2, comp.getManager()->and2(s0,s1)), m->and2(m->neg(s3), m->or2(s3, m->nand2(s3, m->and2(s0,s1))))));
+    //Add transition functions
+    comp.setDelta(functions);
+    //Add init state
+    comp.setInitState({false,false, false, false});
+
+    comp.compute_reachable_states();
+    //Reachable states have been calculated by hand
+    ASSERT_TRUE(comp.is_reachable({false,false, false, false}));
+    ASSERT_TRUE(comp.is_reachable({false,true, true, false}));
+    ASSERT_TRUE(comp.is_reachable({true,true, true, true}));
+    ASSERT_FALSE(comp.is_reachable({false,false, false, true}));
+    ASSERT_FALSE(comp.is_reachable({false,false, true, false}));
+    ASSERT_FALSE(comp.is_reachable({false,false, true, true}));
+    ASSERT_FALSE(comp.is_reachable({false,true, false, false}));
+    ASSERT_FALSE(comp.is_reachable({false,true, false, true}));
+    ASSERT_FALSE(comp.is_reachable({false,true, true, true}));
+    ASSERT_FALSE(comp.is_reachable({true,false, false, false}));
+    ASSERT_FALSE(comp.is_reachable({true,false, false, true}));
+    ASSERT_FALSE(comp.is_reachable({true,false, true, false}));
+    ASSERT_FALSE(comp.is_reachable({true,false, true, true}));
+    ASSERT_FALSE(comp.is_reachable({true,true, false, false}));
+    ASSERT_FALSE(comp.is_reachable({true,true, false, true}));
+    ASSERT_FALSE(comp.is_reachable({true,true, true, false}));
+
+
+
+}
+
+/**
+ * Truth Table
+ * More extensive Test for the Reachability algorithm
+ * |    s3   |   s2  |   s1  |   s0  |   s3' |   s2' |   s1' |   s0' |
+ *
+ * |    0    |   0   |   0   |   0   |   0   |   1   |   1   |   0   |
+ * |    0    |   0   |   0   |   1   |   0   |   1   |   1   |   0   |
+ * |    0    |   0   |   1   |   0   |   0   |   1   |   1   |   0   |
+ * |    0    |   0   |   1   |   1   |   1   |   1   |   1   |   1   |
+ * |    0    |   1   |   0   |   0   |   1   |   1   |   1   |   1   |
+ * |    0    |   1   |   0   |   1   |   1   |   1   |   1   |   1   |
+ * |    0    |   1   |   1   |   0   |   1   |   1   |   1   |   1   |
+ * |    0    |   1   |   1   |   1   |   0   |   1   |   1   |   0   |
+ * |    1    |   0   |   0   |   0   |   0   |   1   |   0   |   0   |
+ * |    1    |   0   |   0   |   1   |   0   |   1   |   0   |   0   |
+ * |    1    |   0   |   1   |   0   |   0   |   1   |   0   |   0   |
+ * |    1    |   0   |   1   |   1   |   0   |   0   |   0   |   1   |
+ * |    1    |   1   |   0   |   0   |   0   |   1   |   0   |   1   |
+ * |    1    |   1   |   0   |   1   |   0   |   1   |   0   |   1   |
+ * |    1    |   1   |   1   |   0   |   0   |   1   |   0   |   1   |
+ * |    1    |   1   |   1   |   1   |   0   |   0   |   0   |  0    |
+ */
+TEST(managerTest, FourState_Example_OtherInitial) {
+
+    ClassProject::Reachable comp(4);
+
+    auto states = comp.getStates();
+    std::vector<BDD_ID> functions;
+    auto m = comp.getManager();
+    auto s0 = states.at(0);
+    auto s1 = states.at(1);
+    auto s2 = states.at(2);
+    auto s3 = states.at(3);
+    //s0' = s2 xor s0s1
+    functions.push_back(m->xor2(s2, m->and2(s0,s1)));
+    //s1' = (!(s0s1s3)+s3)*!s3
+    functions.push_back(m->and2(m->neg(s3), m->or2(s3, m->nand2(s3, m->and2(s0,s1)))));
+    //s2' = (!(s0s1s3)
+    functions.push_back(m->nand2(s3, m->and2(s0,s1)));
+    //s3' = (!(s0s1s3)+s3)*!s3 * (s2 xor s0s1)
+    functions.push_back(m->and2(m->xor2(s2, comp.getManager()->and2(s0,s1)), m->and2(m->neg(s3), m->or2(s3, m->nand2(s3, m->and2(s0,s1))))));
+    //Add transition functions
+    comp.setDelta(functions);
+    //Add init state
+    comp.setInitState({false,false, false, true});
+
+    comp.compute_reachable_states();
+    //Reachable states have been calculated by hand
+    ASSERT_TRUE(comp.is_reachable({false,false, false, false}));
+    ASSERT_FALSE(comp.is_reachable({false,false, false, true}));
+    ASSERT_TRUE(comp.is_reachable({false,false, true, false}));
+    ASSERT_FALSE(comp.is_reachable({false,false, true, true}));
+    ASSERT_FALSE(comp.is_reachable({false,true, false, false}));
+    ASSERT_FALSE(comp.is_reachable({false,true, false, true}));
+    ASSERT_TRUE(comp.is_reachable({false,true, true, false}));
+    ASSERT_FALSE(comp.is_reachable({false,true, true, true}));
+    ASSERT_FALSE(comp.is_reachable({true,false, false, false}));
+    ASSERT_FALSE(comp.is_reachable({true,false, false, true}));
+    ASSERT_FALSE(comp.is_reachable({true,false, true, false}));
+    ASSERT_FALSE(comp.is_reachable({true,false, true, true}));
+    ASSERT_FALSE(comp.is_reachable({true,true, false, false}));
+    ASSERT_FALSE(comp.is_reachable({true,true, false, true}));
+    ASSERT_FALSE(comp.is_reachable({true,true, true, false}));
+    ASSERT_TRUE(comp.is_reachable({true,true, true, true}));
+
+
+
+}
+
 #endif //VDSPROJECT_TESTS_H
