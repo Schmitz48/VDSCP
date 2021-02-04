@@ -191,7 +191,7 @@ TEST(managerTest, FourState_Example_OtherInitial) {
     comp.compute_reachable_states();
     //Reachable states have been calculated by hand
     ASSERT_TRUE(comp.is_reachable({false,false, false, false}));
-    ASSERT_FALSE(comp.is_reachable({false,false, false, true}));
+    ASSERT_TRUE(comp.is_reachable({false,false, false, true}));
     ASSERT_TRUE(comp.is_reachable({false,false, true, false}));
     ASSERT_FALSE(comp.is_reachable({false,false, true, true}));
     ASSERT_FALSE(comp.is_reachable({false,true, false, false}));

@@ -42,8 +42,6 @@ namespace ClassProject {
         BDD_ID tau = 1;
         //transition relation tau
         for (int i  = 0; i < stateSize; i++) {
-            //tau = manager->and2(tau, manager->or2(manager->and2(stateVector.at(i+stateSize),functions.at(i)),  manager->and2(manager->neg(stateVector.at(i+stateSize)),manager->neg(functions.at(i)))));
-            //! seems to work
             tau = manager->and2(tau, xnor2(stateVector_.at(i+stateSize),functions.at(i)));
         }
         //cS0
@@ -57,13 +55,13 @@ namespace ClassProject {
             }
             cs0 = manager->and2(cs0,  tmp);
         }
-        //! currently cs0 = tau*startValues for test example : !s0!s1s0's1'
-        //! next Existential quantifier
+        // currently cs0 = tau*startValues for test example : !s0!s1s0's1'
+        // next Existential quantifier
         for (int i  = 0; i < stateSize; i++) {
             cs0 = manager->or2(manager->coFactorTrue(cs0, stateVector_.at(i)),manager->coFactorFalse(cs0, stateVector_.at(i)));
         }
-        //! we obtained the new state(s) after the initial state s0's1'
-        //! transform this into s0s1
+        // we obtained the new state(s) after the initial state s0's1'
+        // transform this into s0s1
 
         BDD_ID imageCs0 = 1;
         for (int i  = 0; i < stateSize; i++) {
@@ -78,12 +76,13 @@ namespace ClassProject {
         BDD_ID cR;
         do {
             cR = cRit;
-            //compute image
+            //compute image for the next states s0', s1' ...
             BDD_ID image_prime = manager->and2(cR, tau);
             for(int i = 0; i < stateSize; i++) {
                 image_prime = manager->or2(manager->coFactorTrue(image_prime, stateVector_.at(i)), manager->coFactorFalse(image_prime, stateVector_.at(i)));
             }
 
+            //Transform image prime to image containing information about s0, s1 and not s0', s1'
             BDD_ID image = 1;
             for (int i  = 0; i < stateSize; i++) {
                 image = manager->and2(image, xnor2(stateVector_.at(i), stateVector_.at(i+stateSize)));
@@ -92,28 +91,35 @@ namespace ClassProject {
             for(int i = 0; i < stateSize; i++) {
                 image = manager->or2(manager->coFactorTrue(image, stateVector_.at(i + stateSize)), manager->coFactorFalse(image, stateVector_.at(i + stateSize)));
             }
+            //cRit = cR + image
             cRit = manager->or2(cR, image);
 
-        } while (cRit != cR); //
+        } while (cRit != cR); //End of iteration reached?
 
 
         return cR;
     }
 
     bool Reachable::is_reachable(const std::vector<bool>& stateVector){
+        //! Check if the state that is checked is the initial state
+        bool reach = true;
+        for(int i = 0; i < stateSize; i++) {
+            reach = reach && stateVector.at(i) == initVector.at(i);
+        }
+        if(reach) {
+            return reach;
+        }
+        /** Check if the cofactoring corresponding to the given state to be checked
+         *  results in a 1 -> the state is reachable or in any other node -> state is not reachable
+         */
         BDD_ID reachable = compute_reachable_states();
-        for(int i = 0; i < stateVector.size(); i++) {
+        for(int i = 0; i < stateSize; i++) {
             if(stateVector.at(i)) {
                 reachable = manager->coFactorTrue(reachable,  stateVector_.at(i));
             } else {
                 reachable = manager->coFactorFalse(reachable,  stateVector_.at(i));
             }
         }
-        if(reachable == 1) {
-            return true;
-        } else {
-            return false;
-        }
-
+        return reachable == 1;
     }
 }
