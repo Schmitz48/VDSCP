@@ -28,6 +28,32 @@ namespace ClassProject {
         }
     };
 
+
+    struct triple_test{
+        BDD_ID top;
+        BDD_ID high;
+        BDD_ID low;
+        triple_test(BDD_ID top,BDD_ID high ,BDD_ID low) {
+            this->top = top;
+            this->high = high;
+            this->low = low;
+        }
+        bool operator==(const triple_test &t) const {
+            return top == t.top && high == t.high && low == t.low;
+        }
+    };
+
+    struct triple_hash {
+        std::size_t operator()(const triple_test & c) const {
+            std::size_t result = 0;
+            boost::hash_combine(result, c.high);
+            boost::hash_combine(result, c.low);
+            boost::hash_combine(result, c.top);
+            return result;
+        }
+    };
+
+
     //!  Manager
     /*!
     The Manager class inherits and implements the pure virtual functions from the ManagerInterface.
@@ -172,9 +198,11 @@ namespace ClassProject {
 
     private:
         std::string currentNode;
-        //std::map<std::vector<BDD_ID>, BDD_ID> computed_table;
         std::unordered_map<std::vector<BDD_ID>, BDD_ID, container_hash> computed_table; //! For ite storage
         std::unordered_map<std::vector<BDD_ID>, BDD_ID, container_hash> triple_table; //!For find_or_add_unique table
+        std::unordered_map<triple_test, BDD_ID, triple_hash> computed_table_; //! For ite storage
+        std::unordered_map<triple_test, BDD_ID, triple_hash> triple_table_; //!For find_or_add_unique table
+
         std::unordered_map<int, UniqueTableEntry*> uniqueTable; //! Unique Table
 
     };

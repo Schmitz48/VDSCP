@@ -23,23 +23,23 @@ namespace ClassProject {
         setTriple();
     }
 
-    BDD_ID& UniqueTableEntry::getID(){
+    const BDD_ID& UniqueTableEntry::getID(){
         return id_;
     }
 
-    std::string UniqueTableEntry::getLabel(){
+    const std::string UniqueTableEntry::getLabel(){
         return label_;
     }
 
-    BDD_ID UniqueTableEntry::getHigh() const{
+    const BDD_ID UniqueTableEntry::getHigh() const{
         return high_;
     }
 
-    BDD_ID UniqueTableEntry::getLow() const{
+    const BDD_ID UniqueTableEntry::getLow() const{
         return low_;
     }
 
-    BDD_ID UniqueTableEntry::getTopVar() const{
+    const BDD_ID UniqueTableEntry::getTopVar() const{
         return top_var_;
     }
 

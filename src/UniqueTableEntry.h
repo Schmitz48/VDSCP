@@ -29,11 +29,11 @@ namespace ClassProject {
                 BDD_ID top_var);
 
         //Getter
-        BDD_ID& getID();
-        std::string getLabel();
-        BDD_ID getHigh() const;
-        BDD_ID getLow() const;
-        BDD_ID getTopVar() const;
+        const BDD_ID& getID();
+        const std::string getLabel();
+        const BDD_ID getHigh() const;
+        const BDD_ID getLow() const;
+        const BDD_ID getTopVar() const;
         bool getIsVar() const;
         bool getIsConst() const;
         std::vector<BDD_ID> getTriple();
@@ -45,12 +45,12 @@ namespace ClassProject {
         void setIsConst();
         void setTriple();
 
-    private:
-        BDD_ID id_;
-        std::string label_;
-        BDD_ID high_;
-        BDD_ID low_;
-        BDD_ID top_var_;
+    //private:
+        const BDD_ID id_;
+        const std::string label_;
+        const BDD_ID high_;
+        const BDD_ID low_;
+        const BDD_ID top_var_;
         bool is_var_;
         bool is_const_;
         std::vector<BDD_ID> triple_;
