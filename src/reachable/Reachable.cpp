@@ -8,6 +8,7 @@ namespace ClassProject {
 
 
     Reachable::Reachable(unsigned int stateSize) : ReachableInterface(stateSize) {
+        //initialize a new Manager and create the state variables
         manager = new Manager();
         for(int i = 0; i < stateSize; i++) {
             stateVector_.push_back(manager->createVar("s" + std::to_string(i)));

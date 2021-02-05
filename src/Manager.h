@@ -14,37 +14,35 @@
 #include "ManagerInterface.h"
 #include "UniqueTableEntry.h"
 #include <boost/functional/hash.hpp>
+#include "robin_hood.h"
 
 namespace ClassProject {
 
 
-    //!  Hasher
+    //!  Triple data type
     /*!
-    The hash function for std::vector<BDD_ID> hashing uses boost::hash_range to implement an efficient hashing
+    triple_t consists of three BDD_ID fields and is used as key for the computed table and the triple_table
     */
-    struct container_hash {
-        std::size_t operator()(std::vector<BDD_ID> const& c) const {
-            return boost::hash_range(c.begin(), c.end());
-        }
-    };
-
-
-    struct triple_test{
+    struct triple_t{
         BDD_ID top;
         BDD_ID high;
         BDD_ID low;
-        triple_test(BDD_ID top,BDD_ID high ,BDD_ID low) {
+        triple_t(BDD_ID top,BDD_ID high ,BDD_ID low) {
             this->top = top;
             this->high = high;
             this->low = low;
         }
-        bool operator==(const triple_test &t) const {
+        bool operator==(const triple_t &t) const {
             return top == t.top && high == t.high && low == t.low;
         }
     };
 
+    //!  Hash function
+    /*!
+    triple_hash uses boost::hash_combine
+    */
     struct triple_hash {
-        std::size_t operator()(const triple_test & c) const {
+        std::size_t operator()(const triple_t & c) const {
             std::size_t result = 0;
             boost::hash_combine(result, c.high);
             boost::hash_combine(result, c.low);
@@ -198,11 +196,8 @@ namespace ClassProject {
 
     private:
         std::string currentNode;
-        std::unordered_map<std::vector<BDD_ID>, BDD_ID, container_hash> computed_table; //! For ite storage
-        std::unordered_map<std::vector<BDD_ID>, BDD_ID, container_hash> triple_table; //!For find_or_add_unique table
-        std::unordered_map<triple_test, BDD_ID, triple_hash> computed_table_; //! For ite storage
-        std::unordered_map<triple_test, BDD_ID, triple_hash> triple_table_; //!For find_or_add_unique table
-
+        robin_hood::unordered_map<triple_t, BDD_ID, triple_hash> computed_table_; //! For ite storage
+        robin_hood::unordered_map<triple_t, BDD_ID, triple_hash> triple_table_; //!For find_or_add_unique table
         std::unordered_map<int, UniqueTableEntry*> uniqueTable; //! Unique Table
 
     };

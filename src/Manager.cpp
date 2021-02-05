@@ -13,16 +13,14 @@ namespace ClassProject {
 
             auto entry = new UniqueTableEntry(0, "0", 0, 0, 0);
             uniqueTable.insert(std::make_pair(0, entry));
-            //triple_table.insert(std::pair<std::vector<BDD_ID>, BDD_ID>({0,0,0}, 0));
-            triple_test zero = {0,0,0};
-            triple_table_.insert(std::make_pair(zero, 0));
+            triple_t zero = {0,0,0};
+            triple_table_.insert(robin_hood::pair<triple_t, BDD_ID>(zero, 0));
             entry->setIsConst();
             entry = new UniqueTableEntry(1, "1", 1,1,1);
             entry->setIsConst();
             uniqueTable.insert(std::make_pair(1, entry));
-            //triple_table.insert(std::pair<std::vector<BDD_ID>, BDD_ID>({1,1,1}, 1));
-            triple_test one = {1,1,1};
-            triple_table_.insert(std::make_pair(one, 1));
+            triple_t one = {1,1,1};
+            triple_table_.insert(robin_hood::pair<triple_t, BDD_ID>(one, 1));
         }
 
         BDD_ID Manager::createVar(const std::string &label) {
@@ -30,9 +28,8 @@ namespace ClassProject {
             auto entry = new UniqueTableEntry( id, label,1,0,id);
             entry->setIsVar();
             uniqueTable.insert(std::pair<int, UniqueTableEntry*>(id, entry));
-            //triple_table.insert(std::pair<std::vector<BDD_ID>, BDD_ID>({id,1,0}, id));
-            triple_test var = {id,1,0};
-            triple_table_.insert(std::make_pair(var, id));
+            triple_t var = {id,1,0};
+            triple_table_.insert(robin_hood::pair<triple_t, BDD_ID>(var, id));
             return id;
         }
 
@@ -70,12 +67,7 @@ namespace ClassProject {
             } else if (t == 0 && e == 1) {
 
                 //! computed table has entry
-                //std::vector<BDD_ID> ctTriple = {i,t,e};
-                triple_test ctTriple = {i,t,e};
-                /*auto ct_entry = computed_table.find(ctTriple);
-                if (ct_entry != computed_table.end()) {
-                    return ct_entry->second;
-                }*/
+                triple_t ctTriple = {i,t,e};
                 auto ct_entry = computed_table_.find(ctTriple);
                 if (ct_entry != computed_table_.end()) {
                     return ct_entry->second;
@@ -108,44 +100,34 @@ namespace ClassProject {
                 }
 
                 //! unique table has entry
-                /*std::vector<BDD_ID> negatedTriple = {current->top_var_,new_high,new_low};
-                auto ut_entry = triple_table.find(negatedTriple);
-                if (ut_entry != triple_table.end()) {
-                    return ut_entry->second;
-                }*/
-                triple_test negatedTriple = {current->top_var_,new_high,new_low};
+                triple_t negatedTriple = {current->top_var_,new_high,new_low};
                 auto ut_entry = triple_table_.find(negatedTriple);
                 if (ut_entry != triple_table_.end()) {
                     return ut_entry->second;
                 }
-                BDD_ID id = uniqueTableSize();
+                BDD_ID id = uniqueTable.size();
                 auto entry = new UniqueTableEntry(id, "neg", new_high, new_low, current->top_var_);
                 uniqueTable.insert(std::make_pair(id, entry));
-                triple_table_.insert(std::make_pair(negatedTriple, id));
-                triple_test ite = {i,t,e};
-                computed_table_.insert(std::make_pair(ite, id));
+                triple_table_.insert(robin_hood::pair<triple_t, BDD_ID>(negatedTriple, id));
+                triple_t ite = {i,t,e};
+                computed_table_.insert(robin_hood::pair<triple_t, BDD_ID>(ite, id));
                 return id;
             }
 
 
             //! computed table has entry
-            /*std::vector<BDD_ID> ctTriple = {i,t,e};
-            auto ct_entry = computed_table.find(ctTriple);
-            if (ct_entry != computed_table.end()) {
-                return ct_entry->second;
-            }*/
-            triple_test ctTriple = {i,t,e};
+            triple_t ctTriple = {i,t,e};
             auto ct_entry = computed_table_.find(ctTriple);
             if (ct_entry != computed_table_.end()) {
                 return ct_entry->second;
             }
 
             //! Find the top variables
-            std::vector<BDD_ID> ctTriplet = {i,t,e};
+            std::vector<BDD_ID> top_var_check = {i,t,e};
             BDD_ID top_var = uniqueTableSize();
-            for (const auto& ite: ctTriplet) {
-                BDD_ID ite_top = uniqueTable.find(ite)->second->top_var_;//getTopVar();
-                if (!uniqueTable.find(ite)->second->is_const_){//getIsConst()) {
+            for (const auto& ite: top_var_check) {
+                BDD_ID ite_top = uniqueTable.find(ite)->second->top_var_;
+                if (!uniqueTable.find(ite)->second->is_const_){
                     if(top_var > ite_top) {
                         top_var = ite_top;
                     }
@@ -164,41 +146,22 @@ namespace ClassProject {
                 return high;
             }
 
-
-            /*std::vector<BDD_ID> currentTriple = {top_var,high,low};
-            auto ut_entry = triple_table.find(currentTriple);
-            if (ut_entry != triple_table.end()) {
-                return ut_entry->second;
-            }*/
-            triple_test currentTriple = {top_var,high,low};
+            triple_t currentTriple = {top_var,high,low};
             auto ut_entry = triple_table_.find(currentTriple);
             if (ut_entry != triple_table_.end()) {
                 return ut_entry->second;
             }
 
-            BDD_ID id = uniqueTableSize();
+            BDD_ID id = uniqueTable.size();
             auto entry = new UniqueTableEntry(id, currentNode, high, low, top_var);
             uniqueTable.insert(std::make_pair(id, entry));
             //!add entry to tables
-            triple_table_.insert(std::make_pair(currentTriple, id));
-            computed_table_.insert(std::make_pair(ctTriple, id));
+            triple_table_.insert(robin_hood::pair<triple_t, BDD_ID>(currentTriple, id));
+            computed_table_.insert(robin_hood::pair<triple_t, BDD_ID>(ctTriple, id));
             return id;
         }
 
         BDD_ID Manager::coFactorTrue(const BDD_ID f, BDD_ID x) {
-            /*auto f_entry = uniqueTable.find(f)->second;
-            auto x_entry = uniqueTable.find(x)->second;
-            bool terminal = f_entry->getIsConst() || x_entry->getIsConst() || f_entry->getTopVar() > x;
-            if(terminal) {
-                return f;
-            }
-            if(f_entry->getTopVar() == x) {
-                return f_entry->getHigh();
-            } else {
-                BDD_ID T = coFactorTrue(f_entry->getHigh(), x);
-                BDD_ID F = coFactorTrue(f_entry->getLow(), x);
-                return ite(f_entry->getTopVar(), T, F);
-            }*/
             auto f_entry = uniqueTable.find(f)->second;
             auto x_entry = uniqueTable.find(x)->second;
             bool terminal = f_entry->is_const_ || x_entry->is_const_ || f_entry->top_var_ > x;
@@ -215,19 +178,6 @@ namespace ClassProject {
         }
 
         BDD_ID Manager::coFactorFalse(const BDD_ID f, BDD_ID x) {
-            /*auto f_entry = uniqueTable.find(f)->second;
-            auto x_entry = uniqueTable.find(x)->second;
-            bool terminal = f_entry->getIsConst() || x_entry->getIsConst() || f_entry->getTopVar() > x;
-            if(terminal) {
-                return f;
-            }
-            if(f_entry->getTopVar() == x) {
-                return f_entry->getLow();
-            } else {
-                BDD_ID T = coFactorFalse(f_entry->getHigh(), x);
-                BDD_ID F = coFactorFalse(f_entry->getLow(), x);
-                return ite(f_entry->getTopVar(), T, F);
-            }*/
             auto f_entry = uniqueTable.find(f)->second;
             auto x_entry = uniqueTable.find(x)->second;
             bool terminal = f_entry->is_const_ || x_entry->is_const_ || f_entry->top_var_ > x;
@@ -288,7 +238,7 @@ namespace ClassProject {
         }
 
         std::string Manager::getTopVarName(const BDD_ID &root) {
-            return uniqueTable.find(topVar(root))->second->getLabel();
+            return uniqueTable.find(topVar(root))->second->label_;
         }
 
         void Manager::findNodes(const BDD_ID &root, std::set<BDD_ID> &nodes_of_root) {

@@ -60,7 +60,7 @@ namespace ClassProject {
          * This method decides whether a specific state is in the reachable state space or not.
          * The inpute is provided as a vector of states. The value is true if the state bit is high in this state, false otherwise.
          * @param stateVector
-         * @return
+         * @return boolean value whether the state is reachable or not
          */
         bool is_reachable(const std::vector<bool>& stateVector) override;
 
